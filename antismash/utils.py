@@ -489,12 +489,17 @@ def run_hmmsearch(query_hmmfile, target_sequence, cutoff = None):
             ga_exist = False
             nc_exist = False
             for line in open(query_hmmfile,"r"):
-                firstWord = line.split()[0]
+                words = line.split()
+                if not words:
+                    continue  # tolerate blank lines (e.g. trailing newline)
+                firstWord = words[0]
+                if firstWord == "//":
+                    break  # calibration lines all sit in the header block
                 if firstWord == "TC":
                     tc_exist = True
-                if firstWord == "GA":
+                elif firstWord == "GA":
                     ga_exist = True
-                if firstWord == "NC":
+                elif firstWord == "NC":
                     nc_exist = True
             if tc_exist:
                 command.insert(1, "--cut_tc")
