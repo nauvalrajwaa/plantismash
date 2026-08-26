@@ -22,6 +22,8 @@ plantgeneclusterprots.dmnd
 antismash/generic_modules/hmm_detection/**/*.hmm
 # But don't ignore any in the plants subdirectory
 !antismash/generic_modules/hmm_detection/plants/*.hmm
+# Nor in the extended model directory
+!antismash/generic_modules/hmm_detection/plants_extended/*.hmm
 # Ignore environment and editor-specific files
 .python-version
 # Ignore results directory 
