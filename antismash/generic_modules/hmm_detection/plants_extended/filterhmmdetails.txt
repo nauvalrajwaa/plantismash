@@ -1,0 +1,14 @@
+Glycos_transf_1,Glycos_transf_2,Glyco_transf_28,UDPGT,UDPGT_2,Cellulose_synt,dbcan_GT1,dbcan_GT2_cellulose_synt,pfam_CESA,pfam_SUSY,pfam_PME
+SQHop_cyclase_C,SQHop_cyclase_N,Prenyltrans
+adh_short,adh_short_C2,PRISE,Epimerase,3Beta_HSD
+DIOX_N,2OG-FeII_Oxy
+Terpene_synth,Terpene_synth_C
+Methyltransf_2,Methyltransf_3,Methyltransf_7,Methyltransf_11,oMT,nMT,cMT,TPMT
+Chalcone,Chalcone_2,Chalcone_3
+Chal_sti_synt_C,Chal_sti_synt_N
+GMC_oxred_N,GMC_oxred_C,dbcan_AA3
+DAHP_synth_1,DAHP_synth_2
+Abhydrolase_3,COesterase,dbcan_CE1
+Amino_oxidase,AMP-binding
+Glyco_hydro_1,dbcan_GH1
+pfam_GST_C,pfam_GST_N
