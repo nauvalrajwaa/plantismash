@@ -5,9 +5,11 @@ channels:
 channel_priority: strict
 dependencies:
   - python=3.8
-  # Conda dependencies
+  # NOTE (Apple Silicon / osx-arm64): several pins below have no arm64 builds.
+  # On M-series Macs create the env under Rosetta instead:
+  #   CONDA_SUBDIR=osx-64 mamba env create -f environment.yml
   - glimmer=3.02
-  - glimmerhmm=3.0.4 
+  - glimmerhmm=3.0.4
   - hmmer=3.3.2
   - bioconda/label/cf201901::hmmer2
   - fasttree=2.1.11       
@@ -26,8 +28,13 @@ dependencies:
   # Pip dependencies
   - pip
   - pip:
-      - plantismash # gets the lastest version from PyPI
-      - ./graphlan # or a git URL if not local
-      # - graphlan @ git+https://github.com/biobakery/graphlan.git
+      # Install THIS repository (editable) - brings pinned pure-python deps
+      # from pyproject.toml: biopython==1.76, bcbio-gff==0.6.7, straight.plugin, etc.
+      # MOODS-python is OPTIONAL now: pip install -e .[tfbs] to add it if the C
+      # extension builds on your toolchain; tfbs_finder falls back without it.
+      # Do NOT install the PyPI 'plantismash' package here - it would shadow
+      # this fork's code.
+      - -e .
+      - ./graphlan
      
 
