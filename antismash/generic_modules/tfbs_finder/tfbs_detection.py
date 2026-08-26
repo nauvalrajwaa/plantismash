@@ -39,8 +39,17 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.SeqFeature import CompoundLocation
 
-from MOODS import tools as moods_tools
-from MOODS import scan, parsers
+# MOODS is optional (C extension; may be absent if its build failed).
+# tfbs_finder degrades gracefully when missing - see run_tfbs_finder.
+try:
+    from MOODS import tools as moods_tools
+    from MOODS import scan, parsers
+    _HAS_MOODS = True
+except Exception:  # pragma: no cover - depends on env
+    moods_tools = None
+    scan = None
+    parsers = None
+    _HAS_MOODS = False
 
 from antismash import utils
 
@@ -446,6 +455,10 @@ def run_tfbs_finder(record: SeqRecord,
     """
     logging.info("TFBS: %s starting (per-BGC mode)", record.id)
 
+    if not _HAS_MOODS:
+        logging.warning("TFBS: MOODS not installed; skipping TFBS detection "
+                        "(install extra 'tfbs' to enable: pip install -e .[tfbs])")
+        return TFBSFinderResults(record.id, pvalue, start_overlap, {record.id: []})
     matrices = _load_matrices_cached(matrix_path)
     if not matrices:
         logging.warning("TFBS: no matrices loaded (%s)", matrix_path)
