@@ -333,6 +333,12 @@ def main():
                        type=float,
                        default=1.00,
                        help="Multiplier for tuning hmm_detection cutoff globally.")
+    group.add_argument('--min-hmm-coverage',
+                       dest='min_hmm_coverage',
+                       type=float,
+                       default=0.35,
+                       help="Minimum fraction of the HMM profile an alignment must cover "
+                            "(0 disables; rejects partial/low-complexity domain hits).")
     group.add_argument('--gene-num-cutoff',
                        dest='gene_num_cutoff',
                        type=int,
@@ -1842,6 +1848,21 @@ def parse_input_sequences(options):
     total_count = 0
     #hmmdetails = [line.split("\t") for line in open(utils.get_full_path(__file__, path.join("antismash", "generic_modules", "hmm_detection", "hmmdetails.txt")),"r").read().split("\n") if line.count("\t") == 3]
     _signature_profiles = [(sig.name, sig.description, sig.cutoff, sig.path) for sig in hmm_detection.get_sig_profiles()]
+    # Alignment-coverage filter: coverage = (HMM_to - HMM_from + 1) / model_length;
+    # hits below --min-hmm-coverage are dropped before rule evaluation.
+    def _model_length(relpath):
+        try:
+            with open(utils.get_full_path(__file__, path.join("antismash", "generic_modules", "hmm_detection", relpath))) as fh:
+                for line in fh:
+                    if line.startswith("LENG"):
+                        return float(line.split()[1])
+        except OSError:
+            pass
+        return None
+    _hmm_lengths = {name: _model_length(rel) for name, _, _, rel in _signature_profiles}
+    _min_hmm_cov = getattr(options, "min_hmm_coverage", 0.0)
+    if _min_hmm_cov > 0:
+        logging.info("Applying minimum HMM alignment coverage filter: %.2f", _min_hmm_cov)
     full_fasta = ""
     results_by_id = {}
     for seq_record in sequences:
@@ -1865,7 +1886,10 @@ def parse_input_sequences(options):
                     for runresult in runresults:
                         #Store result if it is above cut-off
                         for hsp in runresult.hsps:
-                            if hsp.bitscore > sig[2]:
+                            model_len = _hmm_lengths.get(sig[0])
+                            cov_ok = (model_len is None or _min_hmm_cov <= 0 or
+                                      (hsp.query_end - hsp.query_start + 1) >= _min_hmm_cov * model_len)
+                            if hsp.bitscore > sig[2] and cov_ok:
                                 if len(sig[0].split("/")) > 1:
                                     hsp.query_id = sig[0].split("/")[0] + "/" + hsp.query_id
                                 if hsp.hit_id not in results_by_id:
@@ -1883,7 +1907,10 @@ def parse_input_sequences(options):
             for runresult in runresults:
                 #Store result if it is above cut-off
                 for hsp in runresult.hsps:
-                    if hsp.bitscore > sig[2]:
+                    model_len = _hmm_lengths.get(sig[0])
+                    cov_ok = (model_len is None or _min_hmm_cov <= 0 or
+                              (hsp.query_end - hsp.query_start + 1) >= _min_hmm_cov * model_len)
+                    if hsp.bitscore > sig[2] and cov_ok:
                         if len(sig[0].split("/")) > 1:
                             hsp.query_id = sig[0].split("/")[0] + "/" + hsp.query_id
                         if hsp.hit_id not in results_by_id:
