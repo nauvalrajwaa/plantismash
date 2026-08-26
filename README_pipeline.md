@@ -28,7 +28,7 @@ code changes were needed.
 Contents:
 - `*.hmm` — 106 profiles (93 copied from `plants/` + 13 new: 7 dbCAN, 6 Pfam, see below)
 - `hmmdetails.txt` — profile id → description / cutoff / filename (4 tab-separated columns;
-  `-1` = use the HMM's own trusted cutoffs; uncalibrated dbCAN models fall back to bit-score ≥ 20)
+  `-1` = use the HMM's own trusted cutoffs; uncalibrated dbCAN models carry an explicit bit-score cutoff of 25)
 - `cluster_rules.txt` — 14 cluster rules (12 baseline + 2 new)
 - `filterhmmdetails.txt` — overlap groups so redundant hits on the same gene collapse to the best one
 
@@ -123,14 +123,14 @@ Input: an annotated plant genome — GFF3 + genome FASTA (+ protein FASTA), or a
 # GFF3 input (extended model)
 python run_antismash.py \
     --taxon plants \
-    --enabled-detection-models plants_extended \
+    --models plants_extended \
     --cpus 8 \
     genome.gff3 proteins.faa
 
 # GenBank input, drop-in replacement for your usual plantiSMASH invocation
 plantismash \
     --taxon plants \
-    --enabled-detection-models plants_extended \
+    --models plants_extended \
     --limit -1 \
     --verbose \
     --clusterblast \
@@ -143,7 +143,7 @@ plantismash \
 ```
 
 Notes:
-- Omitting `--enabled-detection-models` gives stock plantiSMASH behaviour (model `plants`).
+- Omitting `--models` gives stock plantiSMASH behaviour (model `plants`). To run both baseline and extended rules together use `--models "plants,plants_extended"`.
 - `--min-hmm-coverage 0.35` is already the default; pass it explicitly for clarity, or set `0` to disable the new filter entirely.
 - Cluster types in outputs are namespaced `plants_extended/<rule>`; baseline rules keep their usual names.
 - All standard antiSMASH output modules apply (HTML report, GenBank, cluster JSON).
