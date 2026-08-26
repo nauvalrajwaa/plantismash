@@ -16,6 +16,14 @@ DBCAN_SELECT = {
         "dbcan_GT2_cellulose_synt",
         "Cellulose synthase-like glycosyltransferase (CAZy GT2)",
     ),
+    "GT43.hmm": (
+        "dbcan_GT43",
+        "Hemicellulose/xylan glycosyltransferase, primary metabolism suppressor (CAZy GT43)",
+    ),
+    "GT47.hmm": (
+        "dbcan_GT47",
+        "Hemicellulose/xylan glycosyltransferase, primary metabolism suppressor (CAZy GT47)",
+    ),
     "GH1.hmm": ("dbcan_GH1", "Beta-glucosidase (CAZy GH1)"),
     "GH3.hmm": (
         "dbcan_GH3",

@@ -1,4 +1,4 @@
-Glycos_transf_1,Glycos_transf_2,Glyco_transf_28,UDPGT,UDPGT_2,Cellulose_synt,dbcan_GT1,dbcan_GT2_cellulose_synt,pfam_CESA,pfam_SUSY,pfam_PME
+Glycos_transf_1,Glycos_transf_2,Glyco_transf_28,UDPGT,UDPGT_2,Cellulose_synt,dbcan_GT1,dbcan_GT2_cellulose_synt,pfam_CESA,pfam_SUSY,pfam_PME,dbcan_GT43,dbcan_GT47
 SQHop_cyclase_C,SQHop_cyclase_N,Prenyltrans
 adh_short,adh_short_C2,PRISE,Epimerase,3Beta_HSD
 DIOX_N,2OG-FeII_Oxy

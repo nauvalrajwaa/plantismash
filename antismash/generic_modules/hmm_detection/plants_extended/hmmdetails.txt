@@ -104,3 +104,5 @@ pfam_GST_N	Glutathione S-transferase, N-terminal domain (Pfam PF02798)	-1	pfam_G
 pfam_CESA	Cellulose synthase, primary metabolism suppressor (Pfam PF03552)	-1	pfam_CESA.hmm
 pfam_SUSY	Glycosyl transferases group 1 incl. sucrose synthase, primary metabolism suppressor (Pfam PF00534)	-1	pfam_SUSY.hmm
 pfam_PME	Pectin methylesterase, primary metabolism suppressor (Pfam PF01095)	-1	pfam_PME.hmm
+dbcan_GT43	Hemicellulose/xylan glycosyltransferase, primary metabolism suppressor (CAZy GT43)	-1	dbcan_GT43.hmm
+dbcan_GT47	Hemicellulose/xylan glycosyltransferase, primary metabolism suppressor (CAZy GT47)	-1	dbcan_GT47.hmm
