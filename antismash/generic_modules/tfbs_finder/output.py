@@ -463,6 +463,71 @@ def _build_tables_for_cluster(seq_record, cluster, options) -> Tuple[str, str]:
     return per_cds_html, per_hit_html
 
 
+def _build_enrichment_html(seq_record, cluster, options) -> str:
+    """Build HTML badge and collapsible enrichment table for a cluster."""
+    try:
+        ns = options.extrarecord.get(seq_record.id)
+        if not ns or "CREEnrichmentResults" not in getattr(ns, "extradata", {}):
+            return "<p class='text-muted'><em>CRE enrichment analysis unavailable or no hits detected.</em></p>"
+        all_results = ns.extradata["CREEnrichmentResults"]
+        cnum_str = str(cluster.get("idx", ""))
+        cl_res = [r for r in all_results if str(r.cluster) == cnum_str]
+        if not cl_res:
+            return "<p class='text-muted'><em>No CRE family enrichment detected for this cluster.</em></p>"
+
+        # Enriched families badge (q < 0.05, top 3)
+        sig_fams = [r for r in cl_res if r.q_value < 0.05 and r.hits_obs > 0]
+        sig_fams.sort(key=lambda r: r.q_value)
+        badge_html = ""
+        if sig_fams:
+            top_3 = sig_fams[:3]
+            badge_items = []
+            for r in top_3:
+                fam_esc = str(r.tf_family).replace("<", "&lt;").replace(">", "&gt;")
+                badge_items.append(f"<strong>{fam_esc}</strong> (q={r.q_value:.3f}, coherence {int(round(r.coherence_fraction * r.n_quorum_genes))}/{r.n_quorum_genes})")
+            badge_text = ", ".join(badge_items)
+            badge_html = f"<div class='alert alert-info py-1 px-2 mb-2'><strong>CRE-enriched:</strong> {badge_text}</div>"
+
+        # Table rows for hits_obs > 0
+        obs_res = [r for r in cl_res if r.hits_obs > 0]
+        obs_res.sort(key=lambda r: r.q_value)
+
+        rows_html = []
+        for r in obs_res:
+            fam_esc = str(r.tf_family).replace("<", "&lt;").replace(">", "&gt;")
+            fold_str = "inf" if (r.hits_exp == 0 and r.hits_obs > 0) else f"{r.fold_enrichment:.2f}"
+            rows_html.append(
+                f"<tr><td>{fam_esc}</td><td>{r.n_motifs}</td><td>{r.hits_obs}</td><td>{r.hits_exp:.2f}</td>"
+                f"<td>{fold_str}</td><td>{r.p_value:.3e}</td><td>{r.q_value:.3e}</td><td>{r.coherence_fraction:.2f}</td></tr>"
+            )
+
+        if not rows_html:
+            table_html = "<p class='text-muted'><em>No TF family with observed hits.</em></p>"
+        else:
+            table_html = (
+                "<table class='table table-sm'>"
+                "<thead><tr>"
+                "<th>Family</th><th>Motifs</th><th>Obs</th><th>Exp</th><th>Fold</th><th>p-value</th><th>q-value</th><th>Coherence</th>"
+                "</tr></thead><tbody>"
+                + "".join(rows_html)
+                + "</tbody></table>"
+            )
+
+        details_html = (
+            badge_html
+            + "<details class='tfbs-block mb-2' open>"
+            + "<summary><strong>CRE Motif Family Enrichment (quorum genes)</strong></summary>"
+            + "<div class='mt-2'>"
+            + table_html
+            + "</div>"
+            + "</details>"
+        )
+        return details_html
+    except Exception as e:
+        logging.warning("TFBS enrichment HTML render failed: %s", e)
+        return "<p class='text-muted'><em>CRE enrichment display error.</em></p>"
+
+
 def generate_details_div(cluster, seq_record, options, js_domains, details=None):
     """Insert the TFBS panel into the cluster page and add a run-level CSV download if present."""
     try:
@@ -471,7 +536,9 @@ def generate_details_div(cluster, seq_record, options, js_domains, details=None)
         logging.exception("TFBS panel: failed to render: %s", e)
         return details
 
-    if not per_cds_html and not per_hit_html:
+    enrichment_html = _build_enrichment_html(seq_record, cluster, options)
+
+    if not per_cds_html and not per_hit_html and not enrichment_html:
         return details  # keep the page clean if nothing to show
 
     if details is None:
@@ -479,11 +546,13 @@ def generate_details_div(cluster, seq_record, options, js_domains, details=None)
         details.addClass("details")
 
     header = pq("<h3>")
-    header.text(f"Transcription factor binding sites (±{getattr(options, 'tfbs_range', 1000)} bp)")
+    header.text(f"Transcription factor binding sites (upstream {getattr(options, 'tfbs_range', 1000)} bp)")
     details.append(header)
 
     container = pq("<div>")
     container.addClass("tfbs-container")
+    if enrichment_html:
+        container.append(pq(enrichment_html))
     if per_cds_html:
         container.append(pq(per_cds_html))
     if per_hit_html:

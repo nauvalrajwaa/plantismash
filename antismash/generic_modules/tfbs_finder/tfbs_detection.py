@@ -29,6 +29,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import IntEnum, auto
 from typing import Any, Dict, List, Optional, Tuple
+import bisect
 import os
 import json
 import logging
@@ -50,6 +51,8 @@ except Exception:  # pragma: no cover - depends on env
     scan = None
     parsers = None
     _HAS_MOODS = False
+
+_MOODS_WARNED = False
 
 from antismash import utils
 
@@ -251,14 +254,70 @@ def _merge_intervals(intervals: List[Tuple[int, int]]) -> List[Tuple[int, int]]:
     return [(int(s), int(e)) for s, e in merged]
 
 
+def build_upstream_caps(all_cds: List) -> Tuple[List[int], List[int]]:
+    """
+    Precompute sorted CDS body edges for strand-agnostic promoter capping.
+
+    Returns (body_ends, body_starts): sorted lists of all CDS end coordinates
+    (0-based exclusive) and start coordinates (0-based inclusive) on the record,
+    regardless of strand. A promoter window may not extend into any neighboring
+    CDS body: for a TSS at t, a + strand window is bounded by the largest
+    body_end <= t, and a - strand window by the smallest body_start > t.
+    """
+    body_ends = sorted(int(c.location.end) for c in all_cds)
+    body_starts = sorted(int(c.location.start) for c in all_cds)
+    return body_ends, body_starts
+
+
+def get_cds_capped_promoter_window(cds,
+                                   caps: Tuple[List[int], List[int]],
+                                   upstream_bp: int,
+                                   seqlen: int) -> Optional[Tuple[int, int]]:
+    """
+    Strand-aware promoter window for one CDS, capped against neighboring CDS
+    bodies irrespective of their strand (an upstream gene on the opposite strand
+    bounds the intergenic region just as well):
+      + strand: [max(TSS - upstream_bp, largest body end <= TSS), TSS + 50]
+      - strand: [TSS - 50, min(TSS + upstream_bp, smallest body start > TSS - 1)]
+    Clipped to contig bounds. Returns inclusive 0-based (a, b), or None.
+
+    Note: TSS is a gene-start proxy from CDS annotation (5' UTR introns are
+    ignored); the +/-50 flank around the TSS keeps a sliver of the gene's own
+    5' end, matching the original asymmetric window design.
+    """
+    tss, strand = _cds_tss_and_strand(cds)
+    if tss is None or strand is None:
+        return None
+    body_ends, body_starts = caps
+    if strand == 1:
+        i = bisect.bisect_right(body_ends, tss)
+        cap = body_ends[i - 1] if i > 0 else 0
+        a = max(tss - upstream_bp, cap)
+        b = tss + 50
+    else:
+        i = bisect.bisect_left(body_starts, tss + 1)
+        cap = body_starts[i] - 1 if i < len(body_starts) else seqlen - 1
+        a = tss - 50
+        b = min(tss + upstream_bp, cap)
+    a = max(0, a)
+    b = min(seqlen - 1, b)
+    if b >= a:
+        return int(a), int(b)
+    return None
+
+
 def _collect_windows_for_cluster(record: SeqRecord,
                                  cluster_feature,
                                  upstream_bp: int) -> Tuple[List[Tuple[int, int]], int]:
     """
     Build strand-aware promoter windows centered at the TSS proxy (CDS start fallback):
       + strand: [TSS - upstream_bp, TSS + 50]
-      – strand: [TSS - 50, TSS + upstream_bp]
+      - strand: [TSS - 50, TSS + upstream_bp]
+    Each window is capped at neighboring CDS body edges (any strand), i.e. it
+    never extends into an upstream neighbor's coding sequence.
     Then clip each window to the cluster span and contig bounds.
+
+    Note: TSS is a gene-start proxy based on CDS annotation (5'-UTR introns are ignored).
 
     Returns (intervals_inclusive, cds_count_included).
     """
@@ -268,29 +327,23 @@ def _collect_windows_for_cluster(record: SeqRecord,
     cds_count = 0
     raw: List[Tuple[int, int]] = []
 
-    for cds in utils.get_cds_features(record):
+    all_cds = list(utils.get_cds_features(record))
+    caps = build_upstream_caps(all_cds)
+
+    for cds in all_cds:
         cds_start = int(cds.location.start)
         cds_end   = int(cds.location.end) - 1  # inclusive
         # only consider CDS that overlap this cluster span
         if cds_end < cstart or cds_start > cend:
             continue
 
-        tss, strand = _cds_tss_and_strand(cds)
-        if tss is None or strand is None:
+        w = get_cds_capped_promoter_window(cds, caps, upstream_bp, seqlen)
+        if w is None:
             continue
 
-        if strand == 1:
-            a, b = tss - upstream_bp, tss + 50
-        else:
-            a, b = tss - 50, tss + upstream_bp
-
-        # clip to contig bounds
-        a = max(0, a)
-        b = min(seqlen - 1, b)
-
         # clip to cluster
-        a = max(a, cstart)
-        b = min(b, cend)
+        a = max(w[0], cstart)
+        b = min(w[1], cend)
 
         if b >= a:
             raw.append((int(a), int(b)))
@@ -455,9 +508,12 @@ def run_tfbs_finder(record: SeqRecord,
     """
     logging.info("TFBS: %s starting (per-BGC mode)", record.id)
 
+    global _MOODS_WARNED
     if not _HAS_MOODS:
-        logging.warning("TFBS: MOODS not installed; skipping TFBS detection "
-                        "(install extra 'tfbs' to enable: pip install -e .[tfbs])")
+        if not _MOODS_WARNED:
+            logging.warning("TFBS: MOODS is unavailable (C extension missing); TFBS results will be empty. "
+                            "Install MOODS-python via 'pip install MOODS-python' or extra 'pip install -e .[tfbs]'")
+            _MOODS_WARNED = True
         return TFBSFinderResults(record.id, pvalue, start_overlap, {record.id: []})
     matrices = _load_matrices_cached(matrix_path)
     if not matrices:

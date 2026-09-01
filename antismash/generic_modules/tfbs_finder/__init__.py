@@ -29,6 +29,12 @@ from .tfbs_detection import (
     PWM_PATH,
     run_tfbs_finder,
     TFBSFinderResults,
+    TFBSHit,
+)
+from .enrichment import (
+    run_cre_enrichment,
+    write_cre_enrichment_tsv,
+    CREEnrichmentResult,
 )
 from . import output  # For HTML rendering
 
@@ -338,11 +344,27 @@ def run_tfbs_finder_for_record(record: SeqRecord, options) -> None:
             hits_by_record={record.id: []},
         )
 
+    # Always ensure tfbs/cre_enrichment.tsv is written (with header even if empty)
+    outdir = output._get_output_dir(options)
+    enrichment_results: List[CREEnrichmentResult] = []
+    hits = results.hits_by_record.get(record.id, [])
+    if hits:
+        try:
+            enrichment_results = run_cre_enrichment(record, options, hits, r, p)
+        except Exception as e:
+            logging.exception("TFBS enrichment: calculation failed for %s: %s", record.id, e)
+            enrichment_results = []
+    try:
+        write_cre_enrichment_tsv(enrichment_results, outdir)
+    except Exception as e:
+        logging.warning("TFBS enrichment: write failed: %s", e)
+
     # stash results for the output module
     options.extrarecord.setdefault(record.id, Namespace())
     ns = options.extrarecord[record.id]
     ns.extradata = getattr(ns, "extradata", {})
     ns.extradata["TFBSFinderResults"] = results
+    ns.extradata["CREEnrichmentResults"] = enrichment_results
     logging.info("✅ TFBS finished for record: %s", record.id)
 
 

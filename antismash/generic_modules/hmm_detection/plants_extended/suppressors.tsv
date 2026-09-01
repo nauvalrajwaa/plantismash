@@ -1,0 +1,6 @@
+profile	margin	enabled
+pfam_CESA	0.15	yes
+pfam_SUSY	0.15	yes
+pfam_PME	0.15	yes
+dbcan_GT43	0.15	yes
+dbcan_GT47	0.15	yes

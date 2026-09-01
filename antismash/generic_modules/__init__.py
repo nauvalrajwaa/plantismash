@@ -18,7 +18,8 @@ from antismash.generic_modules import (
         smcogs,
         coexpress,
         # gff_parser,
-        tfbs_finder
+        tfbs_finder,
+        recruitment_miner
     )
 
 def check_prereqs(options):
@@ -48,5 +49,9 @@ def check_prereqs(options):
     if getattr(options, 'tfbs_detection', False):
         failure_msgs.extend(tfbs_finder.check_prereqs(options))
         failure_msgs.extend(tfbs_finder.check_options(options))
+
+    if getattr(options, 'recruitment_miner', False):
+        failure_msgs.extend(recruitment_miner.check_prereqs(options))
+        failure_msgs.extend(recruitment_miner.check_options(options))
 
     return failure_msgs

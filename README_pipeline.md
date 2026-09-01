@@ -220,3 +220,48 @@ glycosyltransferase labels. On genuine cellulose-synthase / sucrose-synthase / p
 esterase genes, the primary-metabolism hit outcompetes the CAZyme label, so those genes
 carry no BGC type and cannot satisfy `cazyme_rich`/`glycoside` signatures or pool quotas.
 Zero engine changes — pure Layer-3 best-hit-wins behaviour.
+
+---
+
+## TFBS & CRE Enrichment Configuration
+
+When running with `--tfbs`:
+- `--tfbs-range`: upstream promoter window to scan in bp (default `1000`; use `2000` for deep scan). Scans asymmetric promoter-proximal window `[TSS-range, TSS+50]` with upstream neighbor capping.
+- `--tfbs-pvalue`: MOODS p-value cutoff (default `1e-4`).
+
+### Offline / HPC Cluster Runbook
+For offline cluster execution or compute nodes without external internet access, reference validation data (`connectTF_validated.csv`) can be pre-downloaded or routed via environment variables to prevent blocking on network downloads:
+- `PLANTISMASH_TFBS_CONNECT_TF_URL`: custom download URL or local path for `connectTF_validated.csv`.
+- `PLANTISMASH_TFBS_CONNECT_TF_MD5`: expected MD5 hex digest (default `08fc6daa1b4088a6ca341e3b47dca893`).
+- `PLANTISMASH_TFBS_PROGRESS`: progress display mode (`auto`, `on`, `off`).
+
+Assets present locally in `antismash/generic_modules/tfbs_finder/data/` are validated at prerequisite check time and will not trigger network requests.
+
+---
+
+## Recruitment Miner (Target-Guided BGC Prioritization)
+
+Module `recruitment_miner` detects essential/primary-metabolism gene paralogs co-localized within candidate BGCs outside the biosynthetic quorum (ARTS-style target-guided prioritization reframed for plant genomes).
+
+### CLI Flags
+- `--recruitment-miner`: Enable target-guided recruitment mining (default: `False`).
+- `--recruitment-db DIR`: Path to custom reference essential database directory (default: `antismash/generic_modules/recruitment_miner/data/`).
+
+### Output Files
+Outputs are written to `<output>/recruitment_miner/`:
+- `essential_hits.tsv`: Tabular report of record-level essential DB hits with duplication status, copy counts outside cluster, and corruption/pseudogenization tags.
+- `cluster_flags.tsv`: Cluster-level summary reporting candidate paralogs and prioritization bonus signals.
+- Integrated HTML visualization: When candidate paralogs are detected, an interactive collapsible panel is rendered directly in the cluster detail view.
+
+### Database Builder
+To assemble or update the reference essential database offline:
+```bash
+python bash_scripts/build_recruitment_db.py \
+  --tair-pep /path/to/TAIR10_pep_20101214.fasta \
+  --emb-loci /path/to/SeedGenes_Ath_Mutants.txt \
+  --ogee /path/to/ogee_athaliana_essential.tsv \
+  --families /path/to/curated_families.tsv \
+  --out-dir antismash/generic_modules/recruitment_miner/data/
+```
+
+

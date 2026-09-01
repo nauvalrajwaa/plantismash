@@ -1,0 +1,16 @@
+profile	min_bits	coverage_override	note
+dbcan_GT1	60		calibrated from GBK sec_met (n=2, p10 72.2, max 72.2; PA_default+test25_PA+run1+run2); floor capped 60
+dbcan_GT2_cellulose_synt	25		no observations in 4 GBK run sets (n=0); provisional 25 (model length 722, hmmdetails TC)
+dbcan_GH1	60		calibrated from GBK sec_met (n=8, p10 543.1, med 553.6, max 560.9); capped 60
+dbcan_GH3	52		calibrated from GBK sec_met (n=5, p10 52.1, med 200.5, max 214.1); floor 52
+dbcan_AA3	27		calibrated from GBK sec_met (n=4, p10 27.3, med 123.1, max 218.9)
+dbcan_AA7	60		calibrated from GBK sec_met (n=30, p10 238.4, med 280.4, max 301.5); capped 60
+dbcan_CE1	30		calibrated from GBK sec_met (n=5, p10 29.8, med 30.1, max 33.1); floor 30
+pfam_Sulfotransferase	60		calibrated from GBK sec_met (n=2, p10 85.4, max 85.4); capped 60
+pfam_GST_C	27		calibrated from GBK sec_met (n=34, p10 26.6, med 33.6, max 49.3)
+pfam_GST_N	28		calibrated from GBK sec_met (n=35, p10 27.7, med 68.4, max 74.4)
+pfam_CESA	25		suppressor (PF03552, model 722) - no observations; provisional 25; suppressor
+pfam_SUSY	58		suppressor (PF00534, model 172) - n=3, p10 58.2, max 82.8; floor 58; suppressor
+pfam_PME	60		suppressor (PF01095, model 298) - n=1, p10 222.6, max 222.6; capped 60; suppressor
+dbcan_GT43	60		suppressor (GT43, model 212) - n=1, p10 262.0; capped 60; suppressor
+dbcan_GT47	60		suppressor (GT47, model 296) - n=1, p10 194.5; capped 60; suppressor

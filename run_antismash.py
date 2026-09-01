@@ -52,8 +52,10 @@ from antismash.generic_modules import (
     coexpress,
     gff_parser,
     subgroup, 
-    tfbs_finder 
+    tfbs_finder,
+    recruitment_miner
 )
+from antismash.generic_modules.hmm_detection import attribution
 try:
     from antismash.db.biosql import get_record
     from antismash.db.extradata import getExtradata
@@ -221,8 +223,18 @@ def main():
                    help="Run transcription factor binding site (TFBS) prediction.")
     group.add_argument('--tfbs-pvalue', dest='tfbs_pvalue', type=float, default= 1e-4,
                    help="TFBS p-value cutoff (default from config)")
-    group.add_argument('--tfbs-range', dest='tfbs_range', type=int, default=500,
-                    help="Range around clusters to scan for TFBS (default from config)")
+    group.add_argument('--tfbs-range', dest='tfbs_range', type=int, default=1000,
+                    help="bp upstream of TSS to scan (default 1000; use 2000 for deep scan)")
+    group.add_argument('--recruitment-miner',
+                       dest='recruitment_miner',
+                       action='store_true',
+                       default=False,
+                       help="detect essential/primary-metabolism gene paralogs inside BGCs (target-guided prioritization)")
+    group.add_argument('--recruitment-db',
+                       dest='recruitment_db',
+                       type=str,
+                       default=None,
+                       help="path to recruitment miner essential reference database directory")
     group.add_argument('--disable_subgroup',
                        dest='disable_subgroup',
                        action='store_true',
@@ -336,9 +348,19 @@ def main():
     group.add_argument('--min-hmm-coverage',
                        dest='min_hmm_coverage',
                        type=float,
-                       default=0.35,
+                       default=0.25,
                        help="Minimum fraction of the HMM profile an alignment must cover "
                             "(0 disables; rejects partial/low-complexity domain hits).")
+    group.add_argument('--min-hmm-bitscore',
+                       dest='min_hmm_bitscore',
+                       type=float,
+                       default=35,
+                       help="Minimum bitscore for a hit to count toward rule quorums (0 disables).")
+    group.add_argument('--attribution-log',
+                       dest='attribution_log',
+                       choices=['on', 'off'],
+                       default='on',
+                       help="Write per-hit attribution logs to <output>/attribution/ (on/off).")
     group.add_argument('--gene-num-cutoff',
                        dest='gene_num_cutoff',
                        type=int,
@@ -1070,6 +1092,10 @@ def main():
         logging.debug("Writing output for {0} sequence records".format(len(seq_records)))
         write_results(output_plugins, seq_records, options)
         zip_results(seq_records, options)
+        try:
+            attribution.write()
+        except:
+            pass
 
         # Log runtime
         end_time = datetime.now()
@@ -1215,9 +1241,14 @@ def run_general_analyses(seq_record, options):
     # Run Transcription Factor Binding Site (TFBS) analysis
     if options.tfbs_detection:
         utils.log_status(
-            f"TFBS analysis for contig #{options.record_idx} (p-value={options.tfbs_pvalue}, region ±{options.tfbs_range} bp)")
+            f"TFBS analysis for contig #{options.record_idx} (p-value={options.tfbs_pvalue}, upstream {options.tfbs_range} bp)")
         tfbs_finder.run_tfbs_finder_for_record(seq_record, options)
     
+    # Run Recruitment Miner (Target-guided / primary metabolism paralog prioritization)
+    if getattr(options, "recruitment_miner", False):
+        utils.log_status(f"Recruitment miner analysis for contig #{options.record_idx}")
+        recruitment_miner.run_recruitment_miner_for_record(seq_record, options)
+
     # Run Active Site Finder
     if options.run_asf:
         ASFObj = active_site_finder.active_site_finder(seq_record, options)
@@ -1848,8 +1879,6 @@ def parse_input_sequences(options):
     total_count = 0
     #hmmdetails = [line.split("\t") for line in open(utils.get_full_path(__file__, path.join("antismash", "generic_modules", "hmm_detection", "hmmdetails.txt")),"r").read().split("\n") if line.count("\t") == 3]
     _signature_profiles = [(sig.name, sig.description, sig.cutoff, sig.path) for sig in hmm_detection.get_sig_profiles()]
-    # Alignment-coverage filter: coverage = (HMM_to - HMM_from + 1) / model_length;
-    # hits below --min-hmm-coverage are dropped before rule evaluation.
     def _model_length(relpath):
         try:
             with open(utils.get_full_path(__file__, path.join("antismash", "generic_modules", "hmm_detection", relpath))) as fh:
@@ -1861,8 +1890,27 @@ def parse_input_sequences(options):
         return None
     _hmm_lengths = {name: _model_length(rel) for name, _, _, rel in _signature_profiles}
     _min_hmm_cov = getattr(options, "min_hmm_coverage", 0.0)
-    if _min_hmm_cov > 0:
-        logging.info("Applying minimum HMM alignment coverage filter: %.2f", _min_hmm_cov)
+    _min_hmm_bitscore = getattr(options, "min_hmm_bitscore", 35)
+    try:
+        _threshold_path = utils.get_full_path(__file__, path.join("antismash", "generic_modules", "hmm_detection", "plants_extended", "hit_thresholds.tsv"))
+        _hit_thresholds = {}
+        with open(_threshold_path) as _fh:
+            next(_fh)
+            for _line in _fh:
+                if not _line.strip():
+                    continue
+                _parts = _line.rstrip("\n").split("\t")
+                _prof = _parts[0].strip()
+                _mb = float(_parts[1]) if len(_parts) > 1 and _parts[1].strip() else None
+                _co = float(_parts[2]) if len(_parts) > 2 and _parts[2].strip() else None
+                _hit_thresholds[_prof] = (_mb, _co)
+    except OSError:
+        _hit_thresholds = {}
+    try:
+        attribution.init(options.full_outputfolder_path, enabled=(getattr(options, "attribution_log", "on") == "on"))
+    except Exception:
+        pass
+    logging.info("HMM filters --min-hmm-coverage %.2f --min-hmm-bitscore %.1f attribution=%s", _min_hmm_cov, float(_min_hmm_bitscore), getattr(options, "attribution_log", "on"))
     full_fasta = ""
     results_by_id = {}
     for seq_record in sequences:
@@ -1884,18 +1932,51 @@ def parse_input_sequences(options):
                 for sig in _signature_profiles:
                     runresults = utils.run_hmmsearch(utils.get_full_path(__file__, path.join("antismash", "generic_modules", "hmm_detection", sig[3])), full_fasta, sig[2])
                     for runresult in runresults:
-                        #Store result if it is above cut-off
+                        qlen = getattr(runresult, 'seq_len', None)
                         for hsp in runresult.hsps:
-                            model_len = _hmm_lengths.get(sig[0])
-                            cov_ok = (model_len is None or _min_hmm_cov <= 0 or
-                                      (hsp.query_end - hsp.query_start + 1) >= _min_hmm_cov * model_len)
-                            if hsp.bitscore > sig[2] and cov_ok:
-                                if len(sig[0].split("/")) > 1:
-                                    hsp.query_id = sig[0].split("/")[0] + "/" + hsp.query_id
-                                if hsp.hit_id not in results_by_id:
-                                    results_by_id[hsp.hit_id] = [hsp]
-                                else:
-                                    results_by_id[hsp.hit_id].append(hsp)
+                            ml = qlen if qlen is not None else _hmm_lengths.get(sig[0])
+                            aln_len = hsp.query_end - hsp.query_start
+                            cov = float(aln_len) / float(ml) if ml else 0
+                            prof = sig[0].split("/")[-1]
+                            floor, cov_over = _hit_thresholds.get(prof, (None, None))
+                            cov_thresh = cov_over if cov_over is not None else _min_hmm_cov
+                            if ml is not None and ml < 300 and cov_over is None:
+                                cov_ok = True
+                            else:
+                                cov_ok = (cov_thresh <= 0 or ml is None or cov >= cov_thresh)
+                            bits = float(hsp.bitscore)
+                            evalue = float(getattr(hsp, 'evalue', 0))
+                            contig = hsp.hit_id.split(":")[0] if ":" in hsp.hit_id else "unknown"
+                            hit_short = hsp.hit_id.split(":")[-1] if ":" in hsp.hit_id else hsp.hit_id
+                            per_profile_keep = (bits > sig[2]) and (floor is None or bits >= floor)
+                            if not cov_ok:
+                                try:
+                                    attribution.record_hit(contig, hit_short, sig[0], bits, evalue, aln_len, ml, cov, "coverage_fail", "cov %.3f < %.2f" % (cov, cov_thresh))
+                                except:
+                                    pass
+                                continue
+                            if not per_profile_keep:
+                                try:
+                                    attribution.record_hit(contig, hit_short, sig[0], bits, evalue, aln_len, ml, cov, "bits_fail", "bits %.1f <= cutoff %s floor %s" % (bits, sig[2], floor))
+                                except:
+                                    pass
+                                continue
+                            try:
+                                hsp._aln_len = aln_len
+                                hsp._model_len = ml
+                                hsp._coverage = cov
+                            except:
+                                pass
+                            try:
+                                attribution.record_hit(contig, hit_short, sig[0], bits, evalue, aln_len, ml, cov, "kept", "")
+                            except:
+                                pass
+                            if len(sig[0].split("/")) > 1:
+                                hsp.query_id = sig[0].split("/")[0] + "/" + hsp.query_id
+                            if hsp.hit_id not in results_by_id:
+                                results_by_id[hsp.hit_id] = [hsp]
+                            else:
+                                results_by_id[hsp.hit_id].append(hsp)
                 full_fasta = ">%s\n%s" % (gene_id, fasta_seq)
                 cur_count = 0
             cur_count += 1
@@ -1905,18 +1986,51 @@ def parse_input_sequences(options):
         for sig in _signature_profiles:
             runresults = utils.run_hmmsearch(utils.get_full_path(__file__, path.join("antismash", "generic_modules", "hmm_detection", sig[3])), full_fasta, sig[2])
             for runresult in runresults:
-                #Store result if it is above cut-off
+                qlen = getattr(runresult, 'seq_len', None)
                 for hsp in runresult.hsps:
-                    model_len = _hmm_lengths.get(sig[0])
-                    cov_ok = (model_len is None or _min_hmm_cov <= 0 or
-                              (hsp.query_end - hsp.query_start + 1) >= _min_hmm_cov * model_len)
-                    if hsp.bitscore > sig[2] and cov_ok:
-                        if len(sig[0].split("/")) > 1:
-                            hsp.query_id = sig[0].split("/")[0] + "/" + hsp.query_id
-                        if hsp.hit_id not in results_by_id:
-                            results_by_id[hsp.hit_id] = [hsp]
-                        else:
-                            results_by_id[hsp.hit_id].append(hsp)
+                    ml = qlen if qlen is not None else _hmm_lengths.get(sig[0])
+                    aln_len = hsp.query_end - hsp.query_start
+                    cov = float(aln_len) / float(ml) if ml else 0
+                    prof = sig[0].split("/")[-1]
+                    floor, cov_over = _hit_thresholds.get(prof, (None, None))
+                    cov_thresh = cov_over if cov_over is not None else _min_hmm_cov
+                    if ml is not None and ml < 300 and cov_over is None:
+                        cov_ok = True
+                    else:
+                        cov_ok = (cov_thresh <= 0 or ml is None or cov >= cov_thresh)
+                    bits = float(hsp.bitscore)
+                    evalue = float(getattr(hsp, 'evalue', 0))
+                    contig = hsp.hit_id.split(":")[0] if ":" in hsp.hit_id else "unknown"
+                    hit_short = hsp.hit_id.split(":")[-1] if ":" in hsp.hit_id else hsp.hit_id
+                    per_profile_keep = (bits > sig[2]) or (floor is not None and bits >= floor)
+                    if not cov_ok:
+                        try:
+                            attribution.record_hit(contig, hit_short, sig[0], bits, evalue, aln_len, ml, cov, "coverage_fail", "cov %.3f < %.2f" % (cov, cov_thresh))
+                        except:
+                            pass
+                        continue
+                    if not per_profile_keep:
+                        try:
+                            attribution.record_hit(contig, hit_short, sig[0], bits, evalue, aln_len, ml, cov, "bits_fail", "bits %.1f <= cutoff %s floor %s" % (bits, sig[2], floor))
+                        except:
+                            pass
+                        continue
+                    try:
+                        hsp._aln_len = aln_len
+                        hsp._model_len = ml
+                        hsp._coverage = cov
+                    except:
+                        pass
+                    try:
+                        attribution.record_hit(contig, hit_short, sig[0], bits, evalue, aln_len, ml, cov, "kept", "")
+                    except:
+                        pass
+                    if len(sig[0].split("/")) > 1:
+                        hsp.query_id = sig[0].split("/")[0] + "/" + hsp.query_id
+                    if hsp.hit_id not in results_by_id:
+                        results_by_id[hsp.hit_id] = [hsp]
+                    else:
+                        results_by_id[hsp.hit_id].append(hsp)
     for hit_id in results_by_id:
         for hsp in results_by_id[hit_id]:
             hsp.hit_id = hsp.hit_id.split(":", 1)[1]

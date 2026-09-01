@@ -30,6 +30,11 @@ try:
 except Exception: 
     tfbs_output = None
 
+try:
+    from antismash.generic_modules.recruitment_miner import output as recruitment_output
+except Exception:
+    recruitment_output = None
+
 def set_title(d, seq_id, num_clusters):
     d('title').text('%s - %s clusters - antiSMASH results' % (seq_id, num_clusters))
 
@@ -329,6 +334,22 @@ def add_cluster_page(d, cluster, seq_record, options, extra_data, seq_id):
     except Exception as e:
         logging.debug("TFBS panel not added: %s", e)
     # --- end TFBS panel ---
+
+    # --- Recruitment Miner panel (if available) ---
+    try:
+        if recruitment_output is not None:
+            extra_ns = options.extrarecord.get(seq_record.id)
+            extra = getattr(extra_ns, "extradata", {}) if extra_ns else {}
+            rec_flags = extra.get("RecruitmentClusterFlags")
+            if rec_flags:
+                rec_div = recruitment_output.generate_details_div(
+                    cluster, seq_record, options, extra_data['js_domains'], details=None
+                )
+                if rec_div is not None:
+                    content.append(rec_div)
+    except Exception as e:
+        logging.debug("Recruitment Miner panel not added: %s", e)
+    # --- end Recruitment Miner panel ---
 
 
     if options.input_type == 'nucl':

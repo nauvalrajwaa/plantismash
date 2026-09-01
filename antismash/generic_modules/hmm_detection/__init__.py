@@ -22,6 +22,56 @@ from antismash.generic_modules import Signature
 from antismash import config
 from antismash import utils
 from Bio.SeqFeature import SeqFeature, FeatureLocation
+try:
+    from antismash.generic_modules.hmm_detection import attribution
+except ImportError:
+    attribution = None
+_suppressor_cache = None
+_threshold_cache = None
+def _load_suppressors():
+    global _suppressor_cache
+    if _suppressor_cache is not None:
+        return _suppressor_cache
+    _suppressor_cache = {}
+    try:
+        p = utils.get_full_path(__file__, path.join("plants_extended", "suppressors.tsv"))
+        with open(p) as fh:
+            next(fh)
+            for line in fh:
+                if not line.strip():
+                    continue
+                parts = line.rstrip("\n").split("\t")
+                prof = parts[0].strip()
+                try:
+                    margin = float(parts[1])
+                except:
+                    margin = 0.15
+                enabled = parts[2].strip().lower() if len(parts) > 2 else "yes"
+                if enabled == "yes":
+                    _suppressor_cache[prof] = margin
+    except OSError:
+        pass
+    return _suppressor_cache
+def _load_hit_thresholds():
+    global _threshold_cache
+    if _threshold_cache is not None:
+        return _threshold_cache
+    _threshold_cache = {}
+    try:
+        p = utils.get_full_path(__file__, path.join("plants_extended", "hit_thresholds.tsv"))
+        with open(p) as fh:
+            next(fh)
+            for line in fh:
+                if not line.strip():
+                    continue
+                parts = line.rstrip("\n").split("\t")
+                prof = parts[0].strip()
+                mb = float(parts[1]) if len(parts) > 1 and parts[1].strip() else None
+                co = float(parts[2]) if len(parts) > 2 and parts[2].strip() else None
+                _threshold_cache[prof] = (mb, co)
+    except OSError:
+        pass
+    return _threshold_cache
 
 name = "hmmdetection"
 short_description = name.capitalize()
@@ -342,14 +392,70 @@ def filter_results(results, results_by_id, overlaps, feature_by_id):
                                         break
                                 if added == "n":
                                     overlapping_groups.append([hit, otherhit])
-                    #Remove worst-scoring of overlapping hits
                     for group in overlapping_groups:
-                        highestscore = max([hit.bitscore for hit in group])
-                        hit_with_highestscore = group[[hit.bitscore for hit in group].index(highestscore)]
-                        to_delete = [hit for hit in group if hit != hit_with_highestscore]
-                        for res in [res for res in results]:
-                            if res in to_delete:
+                        sorted_group = sorted(group, key=lambda h: h.bitscore, reverse=True)
+                        highest = sorted_group[0]
+                        highest_prof = highest.query_id.split("/")[-1]
+                        suppressors = _load_suppressors()
+                        is_sup = highest_prof in suppressors
+                        best_nonsup = None
+                        best_nonsup_bits = None
+                        if is_sup:
+                            nonsups = [h for h in group if h.query_id.split("/")[-1] not in suppressors]
+                            if nonsups:
+                                best_nonsup = max(nonsups, key=lambda h: h.bitscore)
+                                best_nonsup_bits = best_nonsup.bitscore
+                        to_delete = []
+                        reason = ""
+                        if is_sup and best_nonsup is not None:
+                            margin = suppressors.get(highest_prof, 0.15)
+                            if highest.bitscore < (1 + margin) * best_nonsup_bits:
+                                to_delete = [highest]
+                                reason = "suppressor_margin_fail %.2f < (1+%.2f)*%.1f" % (highest.bitscore, margin, best_nonsup_bits)
+                                logging.info("suppressor margin: %s %.1f loses to %s %.1f (need %.1f) in %s", highest.query_id, highest.bitscore, best_nonsup.query_id, best_nonsup_bits, (1+margin)*best_nonsup_bits, cds)
+                                if attribution is not None:
+                                    try:
+                                        contig = getattr(feature_by_id.get(cds, None), 'location', None)
+                                        cname = "unknown"
+                                        try:
+                                            cname = feature_by_id[cds].qualifiers.get('locus_tag', [cds])[0] if cds in feature_by_id else cds
+                                        except:
+                                            pass
+                                        attribution.record_overlap(cname, cds, ",".join([h.query_id for h in group]), best_nonsup.query_id, best_nonsup_bits, highest.query_id, highest.bitscore, reason)
+                                        attribution.record_hit(cname, cds, highest.query_id, highest.bitscore, getattr(highest,'evalue',0), getattr(highest,'_aln_len',0), getattr(highest,'_model_len',0), getattr(highest,'_coverage',0), "suppressor_margin_fail", reason)
+                                        for h in group:
+                                            if h != highest:
+                                                attribution.record_hit(cname, cds, h.query_id, h.bitscore, getattr(h,'evalue',0), getattr(h,'_aln_len',0), getattr(h,'_model_len',0), getattr(h,'_coverage',0), "kept", "overlap_win")
+                                    except:
+                                        pass
+                            else:
+                                to_delete = [h for h in group if h != highest]
+                                reason = "suppressor_wins %.1f >= (1+%.2f)*%.1f" % (highest.bitscore, margin, best_nonsup_bits)
+                                if attribution is not None:
+                                    try:
+                                        cname = cds
+                                        attribution.record_overlap(cname, cds, ",".join([h.query_id for h in group]), highest.query_id, highest.bitscore, best_nonsup.query_id, best_nonsup_bits, reason)
+                                        for h in to_delete:
+                                            attribution.record_hit(cname, cds, h.query_id, h.bitscore, getattr(h,'evalue',0), getattr(h,'_aln_len',0), getattr(h,'_model_len',0), getattr(h,'_coverage',0), "overlap_loss", reason)
+                                    except:
+                                        pass
+                                logging.info("suppressor wins: %s %.1f beats %s %.1f in %s", highest.query_id, highest.bitscore, best_nonsup.query_id, best_nonsup_bits, cds)
+                        else:
+                            to_delete = [h for h in group if h != highest]
+                            reason = "bitscore_win"
+                            if attribution is not None:
+                                try:
+                                    cname = cds
+                                    winner = highest.query_id
+                                    for loser in to_delete:
+                                        attribution.record_overlap(cname, cds, ",".join([h.query_id for h in group]), winner, highest.bitscore, loser.query_id, loser.bitscore, reason)
+                                        attribution.record_hit(cname, cds, loser.query_id, loser.bitscore, getattr(loser,'evalue',0), getattr(loser,'_aln_len',0), getattr(loser,'_model_len',0), getattr(loser,'_coverage',0), "overlap_loss", reason)
+                                except:
+                                    pass
+                        for res in [r for r in results if r in to_delete]:
+                            if res in results:
                                 del results[results.index(res)]
+                            if cds in results_by_id and res in results_by_id[cds]:
                                 del results_by_id[cds][results_by_id[cds].index(res)]
                                 if len(results_by_id[cds]) < 1:
                                     del results_by_id[cds]
@@ -453,6 +559,34 @@ def apply_cluster_rules(results_by_id, feature_by_id, rulesdict, overlaps, optio
     "Apply cluster rules to determine if HMMs lead to secondary metabolite core gene detection"
     typedict = {}
     cfg = config.get_config()
+    apply_cluster_rules._marginal = {}
+    apply_cluster_rules._quorum_detail = {}
+    _min_bits_global = 35
+    try:
+        _cfg2 = config.get_config()
+        _min_bits_global = float(getattr(_cfg2, 'min_hmm_bitscore', 35))
+    except:
+        _min_bits_global = 35
+    _gthr = _min_bits_global
+    def _passes_global(h):
+        try:
+            return _gthr <= 0 or float(h.bitscore) >= _gthr
+        except:
+            return True
+    def _filtered_ids(gid):
+        return [h.query_id for h in results_by_id.get(gid, []) if _passes_global(h)]
+    def _quorum_bits_for_genes(genes, required):
+        bits = []
+        detail = []
+        for g in genes:
+            for h in results_by_id.get(g, []):
+                if not _passes_global(h):
+                    continue
+                if h.query_id in required:
+                    bits.append(float(h.bitscore))
+                    detail.append("%s:%s:%.1f" % (g, h.query_id, float(h.bitscore)))
+                    break
+        return bits, ";".join(detail)
     cds_with_hits = sorted(list(results_by_id.keys()), key = lambda gene_id: feature_by_id[gene_id].location.start)
     all_types = sorted(rulesdict.keys())
     for cds in cds_with_hits:
@@ -460,7 +594,8 @@ def apply_cluster_rules(results_by_id, feature_by_id, rulesdict, overlaps, optio
         #if typedict[cds] exist (the case of in-advance assignment from neighboring genes), use that instead of "none"
         if cds in typedict:
             _type = typedict[cds]
-        cdsresults = [res.query_id for res in results_by_id[cds]]
+        cdsresults = _filtered_ids(cds)
+        _orig_cdsresults = [res.query_id for res in results_by_id[cds]]
         for clustertype in [ct for ct in all_types if ct not in _type.split("-")]:
             if clustertype not in rulesdict:
                 logging.warning("Skipping unknown clustertype %s; available: %s",
@@ -514,7 +649,7 @@ def apply_cluster_rules(results_by_id, feature_by_id, rulesdict, overlaps, optio
                 if len(cluster_results) > 0:
                     locations = [feature_by_id[cds].location.start, feature_by_id[cds].location.end]
                     for othercds in cds_with_hits:
-                        needed_hits_found = list(set([res.query_id for res in results_by_id[othercds]]) & set(missing_results))
+                        needed_hits_found = list(set(_filtered_ids(othercds)) & set(missing_results))
                         if len(needed_hits_found) > 0:
                             feature = feature_by_id[othercds]
                             flocations = [feature.location.start, feature.location.end]
@@ -572,7 +707,7 @@ def apply_cluster_rules(results_by_id, feature_by_id, rulesdict, overlaps, optio
                         else:
                             within_cutoff = within_cutoff or within_gene_num_cutoff
                         if (within_cutoff):
-                            othercds_results = [res.query_id for res in results_by_id[othercds]]
+                            othercds_results = _filtered_ids(othercds)
                             #check essential hits
                             essential_found = calc_essential_found(missing_essential, othercds_results, prefix)
                             if len(essential_found) > 0:
@@ -616,6 +751,15 @@ def apply_cluster_rules(results_by_id, feature_by_id, rulesdict, overlaps, optio
                         if not nrcds >= min_number:
                             logging.debug('Cluster dropped due to not passing cd-hit filtering [%s:%s]' % (feature_by_id[cds].location.start, feature_by_id[cds].location.end))
                             continue
+                    _all_q_genes = [cds] + neighborcds
+                    _bits, _detail = _quorum_bits_for_genes(_all_q_genes, required_matches)
+                    _is_marginal = (len(_all_q_genes) == min_number and len(_bits) == min_number and len(_bits) > 0 and all(b < 50 for b in _bits))
+                    if _is_marginal:
+                        apply_cluster_rules._marginal[cds] = clustertype
+                        apply_cluster_rules._quorum_detail[cds] = _detail
+                        logging.info("marginal quorum %s at %s: %s", clustertype, cds, _detail)
+                    else:
+                        apply_cluster_rules._quorum_detail[cds] = _detail
                     if not (_type != "none" and clustertype == "other"):
                         if _type == "none" or _type == "other" or _type == clustertype:
                             _type = clustertype
@@ -632,7 +776,6 @@ def apply_cluster_rules(results_by_id, feature_by_id, rulesdict, overlaps, optio
                                 _ntype = clustertype + "-" + _ntype
                         typedict[ncds] = _ntype
                     break
-        #Save type to typedict
         typedict[cds] = _type
     return typedict
 
@@ -716,13 +859,47 @@ def detect_signature_genes(seq_record, enabled_clustertypes, options):
 
 
     find_clusters(seq_record, rulesdict, overlaps)
-
-
-    #Rearrange hybrid clusters name alphabetically
     fix_hybrid_clusters(seq_record)
-
-    #Add details of gene cluster detection to cluster features
     store_detection_details(results_by_id, rulesdict, seq_record)
+    try:
+        marginal = getattr(apply_cluster_rules, "_marginal", {})
+        qdetail = getattr(apply_cluster_rules, "_quorum_detail", {})
+        for cl in utils.get_cluster_features(seq_record):
+            cds_feats = utils.get_cluster_cds_features(cl, seq_record)
+            gene_ids = [utils.get_gene_id(f) for f in cds_feats]
+            mq = ""
+            qd = ""
+            for gid in gene_ids:
+                if gid in marginal:
+                    mq = marginal[gid]
+                    qd = qdetail.get(gid, "")
+                    break
+            if mq:
+                if 'note' not in cl.qualifiers:
+                    cl.qualifiers['note'] = []
+                cl.qualifiers['note'].append("Marginal quorum: %s" % mq)
+            if attribution is not None:
+                try:
+                    cn = getattr(cl, 'qualifiers', {}).get('note', [""])[0] if cl.qualifiers.get('note') else ""
+                    cnum = cn.replace("Cluster number: ", "").strip() if "Cluster number" in cn else "?"
+                    for n in cl.qualifiers.get('note', []):
+                        if n.startswith("Cluster number:"):
+                            cnum = n.split(":")[-1].strip()
+                            break
+                    ctype = utils.get_cluster_type(cl) if hasattr(utils, 'get_cluster_type') else mq
+                    rules = ""
+                    try:
+                        rules = rulesdict.get(ctype, ("",0,0))[0] if ctype in rulesdict else ""
+                    except:
+                        rules = ""
+                    n_genes = len(gene_ids)
+                    n_cores = len([g for g in gene_ids if g in results_by_id and any(qd and g in qd for qd in [qd])]) if qd else n_genes
+                    label_losses = ""
+                    attribution.record_cluster(cnum, seq_record.id, int(cl.location.start), int(cl.location.end), ctype, rules, n_genes, n_cores, mq, qd, label_losses)
+                except:
+                    pass
+    except:
+        pass
 
     # Re-add the short CDSs
     seq_record.features.extend(short_cds_buffer)
@@ -900,8 +1077,14 @@ def store_detection_details(results_by_id, rulesdict, seq_record):
         cluster.qualifiers['note'].append(rule_string)
 
 def _update_sec_met_entry(feature, results, clustertype, nseqdict):
-    result = "; ".join(["%s (E-value: %s, bitscore: %s, seeds: %s)" % (res.query_id, res.evalue, res.bitscore, nseqdict.get(res.query_id, '?'))  for res in results])
-
+    parts = []
+    for res in results:
+        aln = getattr(res, '_aln_len', '?')
+        ml = getattr(res, '_model_len', '?')
+        cov = getattr(res, '_coverage', None)
+        covs = ("%.2f" % cov) if isinstance(cov, float) else "?"
+        parts.append("%s (E-value: %s, bitscore: %s, seeds: %s, aln/model=%s/%s, cov=%s)" % (res.query_id, res.evalue, res.bitscore, nseqdict.get(res.query_id, '?'), aln, ml, covs))
+    result = "; ".join(parts)
     if not 'sec_met' in feature.qualifiers:
         feature.qualifiers['sec_met'] = [
             "Type: %s" % clustertype,
