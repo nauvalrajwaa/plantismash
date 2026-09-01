@@ -254,7 +254,11 @@ Outputs are written to `<output>/recruitment_miner/`:
 - Integrated HTML visualization: When candidate paralogs are detected, an interactive collapsible panel is rendered directly in the cluster detail view.
 
 ### Database Builder
-To assemble or update the reference essential database offline:
+The reference database is bundled directly in `antismash/generic_modules/recruitment_miner/data/`. To rebuild or refresh automatically:
+```bash
+python bash_scripts/build_recruitment_db.py
+```
+Or with custom offline inputs:
 ```bash
 python bash_scripts/build_recruitment_db.py \
   --tair-pep /path/to/TAIR10_pep_20101214.fasta \

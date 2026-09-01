@@ -1,0 +1,523 @@
+agi_locus	source	family	evidence_note
+AT1G01040	EMB	EMB_essential	SeedGenes: SUS 1 (Confirmed) - RNA Helicase
+AT1G01370	EMB	EMB_essential	SeedGenes: CENH 3 (Confirmed) - Centromere-Specific Histone
+AT1G02090	EMB	EMB_essential	SeedGenes: FUS 5 (Confirmed) - Component of COP9 Signalosome
+AT1G02500	CURATED_FAMILY	SAMS	SAM1 / MAT1 (S-adenosylmethionine synthetase 1)
+AT1G02560	EMB	EMB_essential	SeedGenes: CLPP 5 (Confirmed) - Chloroplast Clp Protease Subunit
+AT1G02580	EMB	EMB_essential	SeedGenes: MEA (Confirmed) - SET Domain Polycomb Protein
+AT1G02780	EMB	EMB_essential	SeedGenes: EMB 2386 (Not Confirmed) - Ribosomal Protein L19
+AT1G03360	EMB	EMB_essential	SeedGenes: RRP 4 (Confirmed) - rRNA Processing; Exonuclease
+AT1G04635	EMB	EMB_essential	SeedGenes: EMB 1687 (Confirmed) - Ribonuclease P Family (POP5)
+AT1G04820	CURATED_FAMILY	tubulin	TUA4 (alpha tubulin 4)
+AT1G04950	EMB	EMB_essential	SeedGenes: EMB 2781 (Confirmed) - TATA Box Binding Protein
+AT1G05190	EMB	EMB_essential	SeedGenes: EMB 2394 (Confirmed) - Chloroplast 50S Ribosomal Protein L6
+AT1G05600	EMB	EMB_essential	SeedGenes: EMB 3101 (Confirmed) - PPR Protein
+AT1G05750	EMB	EMB_essential	SeedGenes: PDE 247 (Confirmed) - PPR Protein
+AT1G06145	EMB	EMB_essential	SeedGenes: EMB 1444 (Not Confirmed) - PPR Protein
+AT1G06570	EMB	EMB_essential	SeedGenes: PDS 1 (Confirmed) - p-Hydroxyphenylpyruvate Dioxygenase
+AT1G06950	EMB	EMB_essential	SeedGenes: TIC 110 (Confirmed) - Chloroplast Import Protein
+AT1G07320	EMB	EMB_essential	SeedGenes: EMB 2784 (Not Confirmed) - Plastid Ribosomal Protein L4
+AT1G08130	EMB	EMB_essential	SeedGenes: LIG 1 (Not Confirmed) - DNA Replication and Repair
+AT1G08260	EMB	EMB_essential	SeedGenes: EMB 2284 (Confirmed) - Subunit of DNA Polymerase Epsilon
+AT1G08510	EMB	EMB_essential	SeedGenes: FATB (Confirmed) - Acyl-Acyl Carrier Protein Thioesterase
+AT1G08520	EMB	EMB_essential	SeedGenes: PDE 166 (Confirmed) - Magnesium Chelatase (CHLD)
+AT1G08560	EMB	EMB_essential	SeedGenes: KN (Confirmed) - Cytokinesis-Specific Syntaxin
+AT1G08840	EMB	EMB_essential	SeedGenes: EMB 2411 (Confirmed) - Helicase/Nuclease (Dna2)
+AT1G09770	EMB	EMB_essential	SeedGenes: AtCDC 5 (Not Confirmed) - MYB Domain Transcription Factor
+AT1G10270	EMB	EMB_essential	SeedGenes: GRP 23 (Confirmed) - Novel PPR Protein
+AT1G10510	EMB	EMB_essential	SeedGenes: EMB 2004 (Confirmed) - Uncertain
+AT1G10910	EMB	EMB_essential	SeedGenes: EMB 3103 (Confirmed) - Unknown
+AT1G11680	EMB	EMB_essential	SeedGenes: EMB 1738 (Confirmed) - Obtusifoliol 14-Alpha Demethylase (CYP51)
+AT1G12260	EMB	EMB_essential	SeedGenes: EMB 2749 (Not Confirmed) - NAM-Like Protein
+AT1G12360	EMB	EMB_essential	SeedGenes: KEU (Confirmed) - Cytokinesis-Related Sec1 Protein
+AT1G12410	EMB	EMB_essential	SeedGenes: EMB 3146 (Confirmed) - Chloroplast Clp Protease Proteolytic Subunit
+AT1G12770	EMB	EMB_essential	SeedGenes: EMB 1586 (Confirmed) - DEAD/DEAH Box RNA Helicase
+AT1G13980	EMB	EMB_essential	SeedGenes: EMB 30 (Confirmed) - ARF Guanine Exchange Factor
+AT1G14610	EMB	EMB_essential	SeedGenes: TWN 2 (Confirmed) - Valyl tRNA Synthetase
+AT1G15220	EMB	EMB_essential	SeedGenes: AtCCMH (Not Confirmed) - Mitochondrial Cytochrome C Maturation
+AT1G15510	EMB	EMB_essential	SeedGenes: AtECB 2 (Confirmed) - PPR protein
+AT1G17220	EMB	EMB_essential	SeedGenes: FUG 1 (Not Confirmed) - Chloroplast Translation Initiation Factor (cpIF2)
+AT1G18450	EMB	EMB_essential	SeedGenes: ARP 4 (Confirmed) - Actin-Related Protein
+AT1G19080	EMB	EMB_essential	SeedGenes: TTN 10 (Not Confirmed) - GINS Complex Subunit (PSF3)
+AT1G19800	EMB	EMB_essential	SeedGenes: TGD 1 (Confirmed) - Chloroplast Envelope Protein
+AT1G19850	EMB	EMB_essential	SeedGenes: MP (Confirmed) - B3 Domain Transcription Factor
+AT1G20010	CURATED_FAMILY	tubulin	TUB5 (beta tubulin 5)
+AT1G20050	EMB	EMB_essential	SeedGenes: HYD 1 (Confirmed) - Sterol Isomerase
+AT1G20110	EMB	EMB_essential	SeedGenes: PDE 330 (Not Confirmed) - Zinc Finger Protein
+AT1G20200	EMB	EMB_essential	SeedGenes: EMB 2719 (Not Confirmed) - 26S Proteasome Regulatory Subunit (RPN3)
+AT1G20960	EMB	EMB_essential	SeedGenes: EMB 1507 (Confirmed) - Spliceosome-Associated RNA Helicase
+AT1G21310	EMB	EMB_essential	SeedGenes: RSH (Confirmed) - Cell Wall Hydroxyproline-Rich Glycoprotein
+AT1G21390	EMB	EMB_essential	SeedGenes: EMB 2170 (Not Confirmed) - Unknown
+AT1G21690	EMB	EMB_essential	SeedGenes: EMB 1968 (Confirmed) - Replication Factor C
+AT1G21970	EMB	EMB_essential	SeedGenes: LEC 1 (Confirmed) - Transcriptional Regulator
+AT1G22090	EMB	EMB_essential	SeedGenes: EMB 2204 (Not Confirmed) - Unknown
+AT1G22700	EMB	EMB_essential	SeedGenes: PYG 7 (Confirmed) - TPR protein; Photosystem I
+AT1G23400	EMB	EMB_essential	SeedGenes: AtCAF 2 (Confirmed) - Chloroplast Intron Splicing Factor
+AT1G23820	CURATED_FAMILY	SPDS/PMT	SPDS1 (spermidine synthase 1; primary polyamine metabolism)
+AT1G24340	EMB	EMB_essential	SeedGenes: EMB 2421 (Not Confirmed) - Polyketide Hydroxylase Related Monooxygenase
+AT1G24706	EMB	EMB_essential	SeedGenes: EMB 2793 (Confirmed) - THO/TREX Complex Component (THO2)
+AT1G26980	CURATED_FAMILY	ACCase-CT	ACC2 (acetyl-CoA carboxylase 2; plastidic homomeric)
+AT1G28300	EMB	EMB_essential	SeedGenes: LEC 2 (Confirmed) - B3 Domain Transcription Factor
+AT1G30610	EMB	EMB_essential	SeedGenes: EMB 2279 (Confirmed) - PPR Protein
+AT1G31860	EMB	EMB_essential	SeedGenes: HISN 2 (Confirmed) - Histidine Biosynthesis
+AT1G32490	EMB	EMB_essential	SeedGenes: EMB 2733 (Not Confirmed) - RNA Helicase (Prp2)
+AT1G34430	EMB	EMB_essential	SeedGenes: EMB 3003 (Not Confirmed) - Dihydrolipoamide S-Acetyltransferase; Chloroplast Pyruvate Decarboxylase Complex; Putative E3 Binding Protein
+AT1G34550	EMB	EMB_essential	SeedGenes: EMB 2756 (Not Confirmed) - Unknown
+AT1G36160	CURATED_FAMILY	ACCase-CT	ACC1 (acetyl-CoA carboxylase 1; cytosolic homomeric)
+AT1G43170	EMB	EMB_essential	SeedGenes: EMB 2207 (Confirmed) - Ribosomal Protein L3
+AT1G43710	EMB	EMB_essential	SeedGenes: EMB 1075 (Not Confirmed) - Serine Decarboxylase
+AT1G44900	EMB	EMB_essential	SeedGenes: MCM 2 (Confirmed) - Putative DNA Helicase Subunit
+AT1G48175	EMB	EMB_essential	SeedGenes: EMB 2191 (Confirmed) - tRNA Adenosine Deaminase
+AT1G48350	EMB	EMB_essential	SeedGenes: EMB 3105 (Not Confirmed) - Chloroplast 50S Ribosomal Protein L18
+AT1G48850	EMB	EMB_essential	SeedGenes: EMB 1144 (Not Confirmed) - Chorismate Synthase
+AT1G49400	EMB	EMB_essential	SeedGenes: EMB 1129 (Not Confirmed) - Ribosomal Protein S17
+AT1G49510	EMB	EMB_essential	SeedGenes: EMB 1273 (Confirmed) - Unknown
+AT1G49770	EMB	EMB_essential	SeedGenes: RGE 1 (Confirmed) - bHLH Protein
+AT1G49880	EMB	EMB_essential	SeedGenes: EMB 3106 (Confirmed) - Mitochondrial Sulfhydryl Oxidase
+AT1G50010	CURATED_FAMILY	tubulin	TUA2 (alpha tubulin 2)
+AT1G50030	EMB	EMB_essential	SeedGenes: TOR (Confirmed) - Protein Kinase (Target of Rapamycin)
+AT1G51450	EMB	EMB_essential	SeedGenes: TRAUCO (Confirmed) - Trithorax Class Transcriptional Regulator
+AT1G53580	EMB	EMB_essential	SeedGenes: ETHE 1 (Confirmed) - Glyoxylate-Like Protein
+AT1G55350	EMB	EMB_essential	SeedGenes: EMB 1275 (Confirmed) - Calpain-Type Cysteine Protease
+AT1G55600	EMB	EMB_essential	SeedGenes: MINI 3 (Confirmed) - WRKY Transcription Factor
+AT1G55870	EMB	EMB_essential	SeedGenes: AtPARN (Confirmed) - CAF1 Family Ribonuclease
+AT1G55900	EMB	EMB_essential	SeedGenes: EMB 1860 (Confirmed) - Inner Mitochondrial Membrane Protein (Tim50)
+AT1G56200	EMB	EMB_essential	SeedGenes: EMB 1303 (Confirmed) - Unknown
+AT1G58210	EMB	EMB_essential	SeedGenes: EMB 1674 (Confirmed) - Uncertain
+AT1G59990	EMB	EMB_essential	SeedGenes: EMB 3108 (Not Confirmed) - Putative RNA Helicase
+AT1G60170	EMB	EMB_essential	SeedGenes: EMB 1220 (Not Confirmed) - PRP31 Splicing Factor
+AT1G61680	CURATED_FAMILY	CPS/KSL	TPS21 (terpene synthase 21; diterpene/sesquiterpene)
+AT1G62360	EMB	EMB_essential	SeedGenes: STM (Confirmed) - Knotted Class Homeodomain Protein
+AT1G62750	EMB	EMB_essential	SeedGenes: SCO 1 (Confirmed) - Plastid Elongation Factor G
+AT1G63160	EMB	EMB_essential	SeedGenes: EMB 2811 (Confirmed) - DNA Replication Factor (RFC5)
+AT1G63680	EMB	EMB_essential	SeedGenes: PDE 316 (Confirmed) - Similar to Bacterial mur E Protein
+AT1G63700	EMB	EMB_essential	SeedGenes: YDA (Confirmed) - MAP3K Protein Kinase
+AT1G63970	EMB	EMB_essential	SeedGenes: ISPF (Confirmed) - Isoprenoid Biosynthesis
+AT1G64740	CURATED_FAMILY	tubulin	TUA1 (alpha tubulin 1)
+AT1G64790	EMB	EMB_essential	SeedGenes: ILA (Not Confirmed) - Translational Activator (GCN1)
+AT1G65360	EMB	EMB_essential	SeedGenes: AGL 23 (Confirmed) - MADS Box Transcription Factor
+AT1G66520	EMB	EMB_essential	SeedGenes: PDE 194 (Not Confirmed) - Methionyl-tRNA Formyltransferase
+AT1G67320	EMB	EMB_essential	SeedGenes: EMB 2813 (Confirmed) - DNA Polymerase Alpha (POLA3)
+AT1G67440	EMB	EMB_essential	SeedGenes: EMB 1688 (Confirmed) - Uncertain
+AT1G67490	EMB	EMB_essential	SeedGenes: KNF (Confirmed) - Alpha Glucosidase I
+AT1G67630	EMB	EMB_essential	SeedGenes: EMB 2814 (Confirmed) - DNA Polymerase Alpha (POLA2)
+AT1G67730	EMB	EMB_essential	SeedGenes: KCR 1 (Confirmed) - B-Ketoacyl-Coenzyme A Reductase
+AT1G68450	EMB	EMB_essential	SeedGenes: PDE 337 (Not Confirmed) - Uncertain
+AT1G68730	EMB	EMB_essential	SeedGenes: AtZR 1 (Not Confirmed) - Zinc Finger Protein
+AT1G70070	EMB	EMB_essential	SeedGenes: ISE 2 (Confirmed) - DEAD Box Helicase
+AT1G70080	CURATED_FAMILY	CPS/KSL	TPS14 (terpene synthase 14; diterpene/monoterpene)
+AT1G70310	CURATED_FAMILY	SPDS/PMT	SPDS2 (spermidine synthase 2; primary polyamine metabolism)
+AT1G71440	EMB	EMB_essential	SeedGenes: PFI (Confirmed) - Tubulin Folding Cofactor E
+AT1G71720	EMB	EMB_essential	SeedGenes: PDE 338 (Not Confirmed) - RNA Binding Protein
+AT1G74850	EMB	EMB_essential	SeedGenes: PDE 343 (Confirmed) - PPR; TPR Domain Protein
+AT1G74900	EMB	EMB_essential	SeedGenes: OTP 43 (Confirmed) - PPR Protein; Mitochondrial Splicing
+AT1G74960	EMB	EMB_essential	SeedGenes: FAB 1 (Confirmed) - Ketoacyl-Acyl Carrier Protein Synthase
+AT1G74970	EMB	EMB_essential	SeedGenes: TWN 3 (Not Confirmed) - Ribosomal Protein S9
+AT1G75350	EMB	EMB_essential	SeedGenes: EMB 2184 (Not Confirmed) - Chloroplast Ribosomal Protein L31
+AT1G75660	EMB	EMB_essential	SeedGenes: XRN 3 (Not Confirmed) - PTGS Suppressor
+AT1G75780	CURATED_FAMILY	tubulin	TUB1 (beta tubulin 1)
+AT1G76060	EMB	EMB_essential	SeedGenes: EMB 1793 (Confirmed) - Uncertain
+AT1G76490	CURATED_FAMILY	HMGR	HMG1 / HMGR1 (3-hydroxy-3-methylglutaryl-CoA reductase 1)
+AT1G76620	EMB	EMB_essential	SeedGenes: PDE 339 (Not Confirmed) - Unknown
+AT1G77470	EMB	EMB_essential	SeedGenes: EMB 2810 (Confirmed) - DNA Replication Factor (RFC5)
+AT1G78500	CURATED_FAMILY	OSC	THAS1 (thalianol synthase 1; BGC-associated OSC)
+AT1G78510	CURATED_FAMILY	OSC	MRN1 (marneral synthase 1; BGC-associated OSC)
+AT1G78580	EMB	EMB_essential	SeedGenes: TPS 1 (Confirmed) - Trehalose-6-Phosphate Synthase 1
+AT1G78630	EMB	EMB_essential	SeedGenes: EMB 1473 (Not Confirmed) - Chloroplast Ribosomal Protein L13
+AT1G78950	CURATED_FAMILY	OSC	PEN1 / LUP2 (oxidosqualene cyclase)
+AT1G78955	CURATED_FAMILY	OSC	LUP3 (oxidosqualene cyclase)
+AT1G78960	CURATED_FAMILY	OSC	LUP4 (oxidosqualene cyclase)
+AT1G78970	CURATED_FAMILY	OSC	LUP1 (lupeol synthase 1)
+AT1G79230	EMB	EMB_essential	SeedGenes: STR 1 (Confirmed) - Mitochondrial Sulfurtransferase 1
+AT1G79350	EMB	EMB_essential	SeedGenes: EMB 1135 (Not Confirmed) - DNA-Binding Protein
+AT1G79460	CURATED_FAMILY	KSL	GA2 / KS (ent-kaurene synthase 1; diterpene core)
+AT1G79490	EMB	EMB_essential	SeedGenes: EMB 2217 (Not Confirmed) - PPR Protein
+AT1G79560	EMB	EMB_essential	SeedGenes: EMB 1047 (Confirmed) - Chloroplast FtsH-Like Protease
+AT1G79810	EMB	EMB_essential	SeedGenes: PEX 2 (Confirmed) - Peroxisomal Protein
+AT1G79850	EMB	EMB_essential	SeedGenes: PDE 347 (Confirmed) - Chloroplast Ribosomal Protein S17
+AT1G80070	EMB	EMB_essential	SeedGenes: SUS 2 (Confirmed) - PRP8 Splicing Factor
+AT1G80260	EMB	EMB_essential	SeedGenes: EMB 1427 (Confirmed) - Gamma Tubulin (GCP5)
+AT1G80410	EMB	EMB_essential	SeedGenes: EMB 2753 (Not Confirmed) - N-Terminal Acetyltransferase
+AT1G80770	EMB	EMB_essential	SeedGenes: PDE 318 (Confirmed) - Uncertain
+AT2G01140	EMB	EMB_essential	SeedGenes: PDE 345 (Not Confirmed) - Fructose-Biphosphate Aldolase
+AT2G01190	EMB	EMB_essential	SeedGenes: PDE 331 (Not Confirmed) - Uncertain
+AT2G01350	EMB	EMB_essential	SeedGenes: QPT (Confirmed) - NAD Biosynthesis
+AT2G01390	EMB	EMB_essential	SeedGenes: EMB 3111 (Confirmed) - PPR Protein
+AT2G01420	EMB	EMB_essential	SeedGenes: PIN 4 (Confirmed) - Transmembrane Auxin Efflux Carrier
+AT2G01735	EMB	EMB_essential	SeedGenes: RIE 1 (Confirmed) - Uncertain
+AT2G01860	EMB	EMB_essential	SeedGenes: EMB 975 (Confirmed) - PPR Protein
+AT2G02150	EMB	EMB_essential	SeedGenes: EMB 2794 (Not Confirmed) - Putative PPR Protein
+AT2G03050	EMB	EMB_essential	SeedGenes: EMB 93 (Confirmed) - Plastid mTERF-Related Protein
+AT2G03150	EMB	EMB_essential	SeedGenes: EMB 1579 (Confirmed) - Uncertain
+AT2G03870	EMB	EMB_essential	SeedGenes: EMB 2816 (Not Confirmed) - snRNP; RNA Splicing (LSm7)
+AT2G04030	EMB	EMB_essential	SeedGenes: EMB 1956 (Confirmed) - Heat Shock Protein (Hsp90)
+AT2G04530	EMB	EMB_essential	SeedGenes: TRZ 2 (Not Confirmed) - Plastid tRNA Biosynthesis
+AT2G04842	EMB	EMB_essential	SeedGenes: EMB 2761 (Not Confirmed) - Threonine tRNA Synthetase
+AT2G07050	CURATED_FAMILY	OSC	CAS1 (cycloartenol synthase 1; essential primary sterol precursor)
+AT2G15290	EMB	EMB_essential	SeedGenes: CIA 5 (Confirmed) - Chloroplast Import Protein
+AT2G17090	EMB	EMB_essential	SeedGenes: SSP (Confirmed) - Cytoplasmic Receptor Kinase
+AT2G17250	EMB	EMB_essential	SeedGenes: EMB 2762 (Confirmed) - U3 SnoRNP
+AT2G17370	CURATED_FAMILY	HMGR	HMG2 / HMGR2 (3-hydroxy-3-methylglutaryl-CoA reductase 2)
+AT2G17510	EMB	EMB_essential	SeedGenes: EMB 2763 (Confirmed) - Ribonuclease II
+AT2G18020	EMB	EMB_essential	SeedGenes: EMB 2296 (Confirmed) - Ribosomal Protein L8/L2
+AT2G18290	EMB	EMB_essential	SeedGenes: EMB 2783 (Confirmed) - Anaphase-Promoting Complex (APC10)
+AT2G18390	EMB	EMB_essential	SeedGenes: TTN 5 (Confirmed) - ARL2 GTPase
+AT2G18510	EMB	EMB_essential	SeedGenes: EMB 2444 (Not Confirmed) - Spliceosome Associated Protein (SAP49)
+AT2G19450	EMB	EMB_essential	SeedGenes: TAG 1 (Confirmed) - Diacylglycerol Transferase (DGAT)
+AT2G20580	EMB	EMB_essential	SeedGenes: RPN 1A (Confirmed) - 26S Proteasome Subunit
+AT2G21470	EMB	EMB_essential	SeedGenes: EMB 2764 (Confirmed) - SUMO Activating Enzyme
+AT2G21710	EMB	EMB_essential	SeedGenes: EMB 2219 (Confirmed) - Uncertain
+AT2G22870	EMB	EMB_essential	SeedGenes: EMB 2001 (Confirmed) - Uncertain
+AT2G24120	EMB	EMB_essential	SeedGenes: PDE 319 (Confirmed) - Chloroplast DNA-Dependent RNA Polymerase
+AT2G25660	EMB	EMB_essential	SeedGenes: EMB 2410 (Confirmed) - Unknown
+AT2G25710	EMB	EMB_essential	SeedGenes: HCS 1 (Confirmed) - Holocarboxylase Synthetase
+AT2G26060	EMB	EMB_essential	SeedGenes: EMB 1345 (Confirmed) - WD Repeat Protein (Ciao1)
+AT2G26350	EMB	EMB_essential	SeedGenes: PEX 10 (Confirmed) - Peroxisomal Protein
+AT2G26510	EMB	EMB_essential	SeedGenes: PDE 135 (Not Confirmed) - Permease
+AT2G26830	EMB	EMB_essential	SeedGenes: EMB 1187 (Not Confirmed) - Choline Kinase
+AT2G26890	EMB	EMB_essential	SeedGenes: GRV 2 (Confirmed) - DnaJ Domain Protein (RME-8)
+AT2G26930	EMB	EMB_essential	SeedGenes: PDE 277 (Confirmed) - Isoprenoid Biosynthesis in Plastids
+AT2G27170	EMB	EMB_essential	SeedGenes: TTN 7 (Confirmed) - SMC3 Cohesin
+AT2G28000	EMB	EMB_essential	SeedGenes: SLP (Confirmed) - Chaperonin-60a
+AT2G28800	EMB	EMB_essential	SeedGenes: ALB 3 (Confirmed) - Chloroplast Protein Translocase (Oxa1p)
+AT2G28880	EMB	EMB_essential	SeedGenes: EMB 1997 (Not Confirmed) - Bifunctional PABA Synthase; Glutamine Amidotransferase
+AT2G29550	CURATED_FAMILY	tubulin	TUB7 (beta tubulin 7)
+AT2G30200	EMB	EMB_essential	SeedGenes: EMB 3147 (Not Confirmed) - ACP-S-Malonyltransferase
+AT2G30410	EMB	EMB_essential	SeedGenes: KIS (Confirmed) - Tubulin Folding Cofactor A
+AT2G30920	EMB	EMB_essential	SeedGenes: EMB 3002 (Not Confirmed) - Hexaprenyldihydroxybenzoate Methyltransferase
+AT2G30950	EMB	EMB_essential	SeedGenes: VAR 2 (Confirmed) - Chloroplast Homolog of FtsH
+AT2G31060	EMB	EMB_essential	SeedGenes: EMB 2785 (Confirmed) - E2Fa Transcriptional Activator
+AT2G31305	EMB	EMB_essential	SeedGenes: INH 3 (Confirmed) - Protein Phosphatase 1 Regulatory Subunit
+AT2G31340	EMB	EMB_essential	SeedGenes: EMB 1381 (Confirmed) - Unknown
+AT2G31530	EMB	EMB_essential	SeedGenes: EMB 2289 (Confirmed) - Chloroplast Protein Translocase (SECY2)
+AT2G32590	EMB	EMB_essential	SeedGenes: EMB 2795 (Confirmed) - Non-SMC Condensin Complex Subunit H
+AT2G32950	EMB	EMB_essential	SeedGenes: COP 1 (Confirmed) - Nuclear Protein that Represses Photomorphogenesis in the Dark
+AT2G33430	EMB	EMB_essential	SeedGenes: DAL 1 (Confirmed) - Plastid rRNA Processing
+AT2G33800	EMB	EMB_essential	SeedGenes: EMB 3113 (Confirmed) - Chloroplast 30S Ribosomal Protein S5
+AT2G34650	EMB	EMB_essential	SeedGenes: PID (Confirmed) - Serine-Threonine Protein Kinase
+AT2G34780	EMB	EMB_essential	SeedGenes: EMB 1611 (Confirmed) - Uncertain
+AT2G35650	EMB	EMB_essential	SeedGenes: CSLA 7 (Confirmed) - Cellulose Synthase-Like Glycosyltransferase
+AT2G35670	EMB	EMB_essential	SeedGenes: FIS 2 (Confirmed) - Zinc Finger Transcriptional Regulator
+AT2G36000	EMB	EMB_essential	SeedGenes: EMB 3114 (Not Confirmed) - Uncertain
+AT2G36230	EMB	EMB_essential	SeedGenes: HISN 3 (Confirmed) - Histidine Biosynthesis
+AT2G36880	CURATED_FAMILY	SAMS	SAM4 / MAT4 (S-adenosylmethionine synthetase 4)
+AT2G37560	EMB	EMB_essential	SeedGenes: ORC 2 (Confirmed) - Origin Recognition Complex Subunit 2
+AT2G37920	EMB	EMB_essential	SeedGenes: EMB 1513 (Not Confirmed) - Unknown
+AT2G38020	EMB	EMB_essential	SeedGenes: VCL 1 (Confirmed) - Vacuolar Protein Sorting (Vps16)
+AT2G38040	CURATED_FAMILY	ACCase-CT	CAC3 / BC (biotin carboxylase)
+AT2G38280	EMB	EMB_essential	SeedGenes: FAC 1 (Confirmed) - AMP Deaminase
+AT2G38670	EMB	EMB_essential	SeedGenes: PECT 1 (Confirmed) - Phosphatidylethanolamine Biosynthesis
+AT2G38770	EMB	EMB_essential	SeedGenes: EMB 2765 (Confirmed) - U5 Associated Protein (Aquarius)
+AT2G39080	EMB	EMB_essential	SeedGenes: EMB 2799 (Not Confirmed) - Unknown
+AT2G39140	EMB	EMB_essential	SeedGenes: PDE 328 (Confirmed) - Pseudouridine Synthase; RNA binding
+AT2G39770	EMB	EMB_essential	SeedGenes: CYT 1 (Confirmed) - Mannose-1-Phosphate Guanyltransferase; GDP-Mannose Pyrophosphorylase
+AT2G40930	EMB	EMB_essential	SeedGenes: PDE 323 (Not Confirmed) - Ubiquitin-Specific Protease (UBP5)
+AT2G41350	EMB	EMB_essential	SeedGenes: EMB 2819 (Not Confirmed) - HAUS1 Subunit of Augmin Complex
+AT2G41500	EMB	EMB_essential	SeedGenes: EMB 2776 (Confirmed) - U4/U6 snRNP (Prp4)
+AT2G41720	EMB	EMB_essential	SeedGenes: EMB 2654 (Not Confirmed) - PPR Protein
+AT2G43360	EMB	EMB_essential	SeedGenes: BIO 2 (Confirmed) - Biotin Synthase
+AT2G43650	EMB	EMB_essential	SeedGenes: EMB 2777 (Not Confirmed) - U3 snoRNP (Utp3); Processome Small Subunit
+AT2G44190	EMB	EMB_essential	SeedGenes: EMB 3116 (Confirmed) - Novel Microtubule Associated Protein
+AT2G45000	EMB	EMB_essential	SeedGenes: EMB 2766 (Confirmed) - COPII Coat Protein (Sec31)
+AT2G45270	EMB	EMB_essential	SeedGenes: GCP 1 (Confirmed) - Mitochondrial Glycoprotease
+AT2G45330	EMB	EMB_essential	SeedGenes: EMB 1067 (Confirmed) - 2' tRNA Phosphotransferase
+AT2G45690	EMB	EMB_essential	SeedGenes: SSE (Confirmed) - Peroxisomal Biogenesis Factor (Pex16)
+AT2G47620	EMB	EMB_essential	SeedGenes: AtSWI 3A (Confirmed) - DNA Binding Protein
+AT2G47940	EMB	EMB_essential	SeedGenes: EMB 3117 (Not Confirmed) - Chloroplast DegP2 Protease
+AT2G48120	EMB	EMB_essential	SeedGenes: PAC (Confirmed) - Uncertain
+AT3G01370	EMB	EMB_essential	SeedGenes: AtCFM 2 (Confirmed) - Chloroplast Intron Splicing Factor
+AT3G01610	EMB	EMB_essential	SeedGenes: EMB 1354 (Not Confirmed) - AAA ATPase (CD48C)
+AT3G02280	EMB	EMB_essential	SeedGenes: ATR 3 (Confirmed) - Cytochrome P450 Reductase Like
+AT3G02660	EMB	EMB_essential	SeedGenes: EMB 2768 (Confirmed) - Tyrosine tRNA Synthetase
+AT3G03710	EMB	EMB_essential	SeedGenes: PDE 326 (Confirmed) - Plastid Polynucleotide Phosphorylase
+AT3G04260	EMB	EMB_essential	SeedGenes: PDE 324 (Confirmed) - SAP Domain Protein (PTAC3)
+AT3G04340	EMB	EMB_essential	SeedGenes: EMB 2458 (Confirmed) - FtsH Protease (AAA ATPase)
+AT3G04400	EMB	EMB_essential	SeedGenes: EMB 2171 (Not Confirmed) - Ribosomal Protein L17/L23
+AT3G04460	EMB	EMB_essential	SeedGenes: PEX 12 (Confirmed) - Peroxisomal Protein
+AT3G04520	EMB	EMB_essential	SeedGenes: THA 2 (Confirmed) - Threonine Aldolase
+AT3G04680	EMB	EMB_essential	SeedGenes: CLPS 3 (Confirmed) - Polyadenylation Factor
+AT3G04790	EMB	EMB_essential	SeedGenes: EMB 3119 (Confirmed) - Ribulose-5-Phosphate Isomerase
+AT3G04870	EMB	EMB_essential	SeedGenes: PDE 181 (Not Confirmed) - Zeta Carotene Desaturase
+AT3G05680	EMB	EMB_essential	SeedGenes: EMB 2016 (Confirmed) - Unknown
+AT3G06350	EMB	EMB_essential	SeedGenes: EMB 3004 (Confirmed) - Dehydroquinate Dehydratase; Shikimate Dehydrogenase
+AT3G06430	EMB	EMB_essential	SeedGenes: EMB 2750 (Confirmed) - PPR Protein
+AT3G06960	EMB	EMB_essential	SeedGenes: PDE 320 (Not Confirmed) - Uncertain
+AT3G07060	EMB	EMB_essential	SeedGenes: EMB 1974 (Confirmed) - Unknown
+AT3G07430	EMB	EMB_essential	SeedGenes: EMB 1990 (Confirmed) - Uncertain
+AT3G08850	EMB	EMB_essential	SeedGenes: RAPTOR 1 (Confirmed) - Binding Partner of Target of Rapamycin (TOR) Kinase
+AT3G10220	EMB	EMB_essential	SeedGenes: EMB 2804 (Confirmed) - Tubulin Folding Cofactor B
+AT3G10670	EMB	EMB_essential	SeedGenes: AtNAP 7 (Confirmed) - Plastidic SufC-Like ABC/ATPase
+AT3G10690	EMB	EMB_essential	SeedGenes: AtGYR A (Confirmed) - DNA Gyrase Subunit A
+AT3G11670	EMB	EMB_essential	SeedGenes: DGD 1 (Confirmed) - Digalactosyl Diacylglycerol Synthase
+AT3G11940	EMB	EMB_essential	SeedGenes: AML 1 (Confirmed) - Ribosomal Protein S5
+AT3G12080	EMB	EMB_essential	SeedGenes: EMB 2738 (Confirmed) - Uncertain
+AT3G12670	EMB	EMB_essential	SeedGenes: EMB 2742 (Confirmed) - CTP Synthase (UTP-Ammonia Ligase)
+AT3G13200	EMB	EMB_essential	SeedGenes: EMB 2769 (Not Confirmed) - U5 Associated Protein (Cwc15)
+AT3G14900	EMB	EMB_essential	SeedGenes: EMB 3120 (Confirmed) - Unknown
+AT3G16290	EMB	EMB_essential	SeedGenes: EMB 2083 (Confirmed) - FtsH Protease (AAA ATPase)
+AT3G17300	EMB	EMB_essential	SeedGenes: EMB 2786 (Confirmed) - Unknown
+AT3G17390	CURATED_FAMILY	SAMS	SAM3 / MAT3 (S-adenosylmethionine synthetase 3)
+AT3G17650	EMB	EMB_essential	SeedGenes: PDE 321 (Not Confirmed) - OPT Transporter (YSL5)
+AT3G17910	EMB	EMB_essential	SeedGenes: EMB 3121 (Confirmed) - Cytochrome C Oxidase Assembly in Mitochondria
+AT3G18110	EMB	EMB_essential	SeedGenes: EMB 1270 (Confirmed) - PPR Protein
+AT3G18290	EMB	EMB_essential	SeedGenes: EMB 2454 (Confirmed) - Zinc Finger Protein
+AT3G18390	EMB	EMB_essential	SeedGenes: EMB 1865 (Confirmed) - Chloroplast Splicing Factor (CFM1)
+AT3G19700	EMB	EMB_essential	SeedGenes: IKU 2 (Confirmed) - LRR Kinase
+AT3G19770	EMB	EMB_essential	SeedGenes: AtVPS 9A (Confirmed) - Rab5 Guanine Exchange Factor
+AT3G19980	EMB	EMB_essential	SeedGenes: EMB 2736 (Not Confirmed) - Serine/Threonine Protein Phosphatase 6
+AT3G20070	EMB	EMB_essential	SeedGenes: TTN 9 (Confirmed) - Unknown
+AT3G20400	EMB	EMB_essential	SeedGenes: EMB 2743 (Not Confirmed) - Uncertain
+AT3G20440	EMB	EMB_essential	SeedGenes: EMB 2729 (Confirmed) - 1,4-alpha-glucan branching enzyme
+AT3G20630	EMB	EMB_essential	SeedGenes: TTN 6 (Confirmed) - UBP14 Deubiquitinating Enzyme
+AT3G20740	EMB	EMB_essential	SeedGenes: FIE (Confirmed) - WD Polycomb Protein
+AT3G23110	EMB	EMB_essential	SeedGenes: EMB 2800 (Not Confirmed) - LRR Protein (AtRLP37)
+AT3G24560	EMB	EMB_essential	SeedGenes: RSY 3 (Confirmed) - Uncertain
+AT3G25860	EMB	EMB_essential	SeedGenes: PL E2 (Confirmed) - Chloroplast Pyruvate Decarboxylase E2 Subunit
+AT3G26790	EMB	EMB_essential	SeedGenes: FUS 3 (Confirmed) - B3 Domain Transcription Factor
+AT3G26900	EMB	EMB_essential	SeedGenes: SKL 1 (Confirmed) - Uncertain
+AT3G27670	EMB	EMB_essential	SeedGenes: RST 1 (Confirmed) - Unknown
+AT3G27750	EMB	EMB_essential	SeedGenes: EMB 3123 (Confirmed) - Uncertain
+AT3G29290	EMB	EMB_essential	SeedGenes: EMB 2076 (Not Confirmed) - PPR Protein
+AT3G44530	EMB	EMB_essential	SeedGenes: HIRA (Confirmed) - Chromatin Remodeling Factor
+AT3G46560	EMB	EMB_essential	SeedGenes: EMB 2474 (Not Confirmed) - Small Zinc Finger Protein
+AT3G46740	EMB	EMB_essential	SeedGenes: TOC 75 (Confirmed) - Chloroplast Import Protein
+AT3G48110	EMB	EMB_essential	SeedGenes: EDD (Confirmed) - Chloroplast Glycyl tRNA Synthetase
+AT3G48470	EMB	EMB_essential	SeedGenes: EMB 2423 (Confirmed) - Uncertain
+AT3G48500	EMB	EMB_essential	SeedGenes: PDE 312 (Confirmed) - Uncertain
+AT3G48750	EMB	EMB_essential	SeedGenes: CDC 2A (Confirmed) - Cyclin-Dependent Kinase
+AT3G48930	EMB	EMB_essential	SeedGenes: EMB 1080 (Not Confirmed) - Ribosomal Protein S11
+AT3G49170	EMB	EMB_essential	SeedGenes: EMB 2261 (Confirmed) - PPR Protein
+AT3G49240	EMB	EMB_essential	SeedGenes: EMB 1796 (Confirmed) - PPR Protein
+AT3G49660	EMB	EMB_essential	SeedGenes: AtMUT 11 (Not Confirmed) - Subunit of Histone Methyltransferase Complex
+AT3G50870	EMB	EMB_essential	SeedGenes: MNP (Confirmed) - GATA Factor Transcriptional Regulator
+AT3G51820	EMB	EMB_essential	SeedGenes: PDE 325 (Confirmed) - Chlorophyll Synthase (CHLG/ATG4)
+AT3G52380	EMB	EMB_essential	SeedGenes: PDE 322 (Not Confirmed) - Chloroplast RNA Binding Protein (CP33)
+AT3G52590	EMB	EMB_essential	SeedGenes: EMB 2167 (Confirmed) - Ubiquitin Fused to Ribosomal Protein L40 (UbA52)
+AT3G52940	EMB	EMB_essential	SeedGenes: FK (Confirmed) - Sterol C-14 Reductase
+AT3G54010	EMB	EMB_essential	SeedGenes: PAS 1 (Confirmed) - Immunophilin-like FK506 Binding Protein
+AT3G54170	EMB	EMB_essential	SeedGenes: FIP 37 (Confirmed) - FKBP12 Interacting Protein
+AT3G54320	EMB	EMB_essential	SeedGenes: WRI 1 (Confirmed) - Transcription Factor
+AT3G54350	EMB	EMB_essential	SeedGenes: EMB 1967 (Confirmed) - Forkhead-Associated (FHA) Domain Protein
+AT3G54650	EMB	EMB_essential	SeedGenes: FBL 17 (Confirmed) - F-Box Protein
+AT3G54660	EMB	EMB_essential	SeedGenes: EMB 2360 (Confirmed) - Chloroplast Glutathione Reductase
+AT3G54670	EMB	EMB_essential	SeedGenes: TTN 8 (Confirmed) - SMC1 Cohesin
+AT3G54720	EMB	EMB_essential	SeedGenes: AMP 1 (Confirmed) - Putative Glutamate Carboxypeptidase
+AT3G55010	EMB	EMB_essential	SeedGenes: EMB 2818 (Confirmed) - Phosphoribosylformylglycinamidine Cyclo-ligase (PUR5)
+AT3G55250	EMB	EMB_essential	SeedGenes: PDE 329 (Not Confirmed) - Uncertain
+AT3G55510	EMB	EMB_essential	SeedGenes: RBL (Not Confirmed) - Uncertain
+AT3G55610	EMB	EMB_essential	SeedGenes: P5CS 2 (Confirmed) - Proline Biosynthesis
+AT3G55620	EMB	EMB_essential	SeedGenes: EMB 1624 (Not Confirmed) - Translation Initiation Factor (EIF-6)
+AT3G57870	EMB	EMB_essential	SeedGenes: EMB 1637 (Confirmed) - SUMO Conjugating Enzyme (SCE1)
+AT3G60740	EMB	EMB_essential	SeedGenes: TTN 1 (Confirmed) - Tubulin Folding Cofactor D
+AT3G60830	EMB	EMB_essential	SeedGenes: ARP 7 (Confirmed) - Actin-Related Protein
+AT3G61140	EMB	EMB_essential	SeedGenes: FUS 6 (Confirmed) - Component of COP9 Signalosome
+AT3G61780	EMB	EMB_essential	SeedGenes: EMB 1703 (Confirmed) - Unknown
+AT3G62910	EMB	EMB_essential	SeedGenes: APG 3 (Confirmed) - Translation Releasing Factor RF-1
+AT3G63490	EMB	EMB_essential	SeedGenes: EMB 3126 (Confirmed) - Chloroplast 50S Ribosomal Protein L1
+AT4G00220	EMB	EMB_essential	SeedGenes: JLO (Confirmed) - LOB domain protein
+AT4G00620	EMB	EMB_essential	SeedGenes: EMB 3127 (Confirmed) - Folic Acid Biosynthesis
+AT4G01800	EMB	EMB_essential	SeedGenes: AGY 1 (Confirmed) - Thylakoid Protein Translocase (cpSecA)
+AT4G01850	CURATED_FAMILY	SAMS	SAM2 / MAT2 (S-adenosylmethionine synthetase 2)
+AT4G02060	EMB	EMB_essential	SeedGenes: PRL (Confirmed) - DNA Replication Licensing Factor
+AT4G02570	EMB	EMB_essential	SeedGenes: AXR 6 (Confirmed) - Cullin 1 Protein
+AT4G02780	CURATED_FAMILY	CPS	GA1 / CPS (ent-copalyl diphosphate synthase 1; gibberellin core)
+AT4G02790	EMB	EMB_essential	SeedGenes: EMB 3129 (Confirmed) - Uncertain
+AT4G02980	EMB	EMB_essential	SeedGenes: ABP 1 (Confirmed) - Auxin Binding Protein 1
+AT4G03240	EMB	EMB_essential	SeedGenes: AtFH (Confirmed) - Frataxin
+AT4G03280	EMB	EMB_essential	SeedGenes: PETC (Confirmed) - Rieske Subunit of Cytochrome b6f Complex
+AT4G03430	EMB	EMB_essential	SeedGenes: EMB 2770 (Confirmed) - U5 snRNP (Prp6)
+AT4G04350	EMB	EMB_essential	SeedGenes: EMB 2369 (Confirmed) - Leucyl tRNA Synthetase
+AT4G05410	EMB	EMB_essential	SeedGenes: YAO (Confirmed) - snoRNP Protein
+AT4G09650	EMB	EMB_essential	SeedGenes: PDE 332 (Not Confirmed) - Chloroplast ATP Synthase Delta Chain
+AT4G09980	EMB	EMB_essential	SeedGenes: EMB 1691 (Confirmed) - DNA Methyltransferase
+AT4G10180	EMB	EMB_essential	SeedGenes: DET 1 (Confirmed) - Nuclear-Localized Protein
+AT4G10760	EMB	EMB_essential	SeedGenes: EMB 1706 (Confirmed) - Methyltransferase MT-A70
+AT4G11150	EMB	EMB_essential	SeedGenes: EMB 2448 (Confirmed) - Vacuolar H+ ATPase (VHA-E1)
+AT4G13750	EMB	EMB_essential	SeedGenes: EMB 2597 (Confirmed) - Uncertain
+AT4G13940	EMB	EMB_essential	SeedGenes: EMB 1395 (Confirmed) - S-Adenosyl Homocysteine Hydrolase
+AT4G14110	EMB	EMB_essential	SeedGenes: COP 9 (Confirmed) - Component of COP9 Signalosome
+AT4G14210	EMB	EMB_essential	SeedGenes: PDE 226 (Confirmed) - Phytoene Desaturase
+AT4G14590	EMB	EMB_essential	SeedGenes: EMB 2739 (Not Confirmed) - Uncertain
+AT4G14960	CURATED_FAMILY	tubulin	TUA6 (alpha tubulin 6)
+AT4G15560	EMB	EMB_essential	SeedGenes: CLA (Confirmed) - 1-Deoxyxylulose 5-Phosphate Synthase
+AT4G16370	EMB	EMB_essential	SeedGenes: OPT 3 (Confirmed) - Oligopeptide Transporter
+AT4G18480	EMB	EMB_essential	SeedGenes: CH 42 (Confirmed) - Magnesium Chelatase (CHLI)
+AT4G19350	EMB	EMB_essential	SeedGenes: EMB 3006 (Not Confirmed) - Unknown
+AT4G20060	EMB	EMB_essential	SeedGenes: EMB 1895 (Confirmed) - Unknown
+AT4G20090	EMB	EMB_essential	SeedGenes: EMB 1025 (Confirmed) - PPR Protein
+AT4G20740	EMB	EMB_essential	SeedGenes: EMB 3131 (Confirmed) - PPR Protein
+AT4G20890	CURATED_FAMILY	tubulin	TUB9 (beta tubulin 9)
+AT4G21130	EMB	EMB_essential	SeedGenes: EMB 2271 (Not Confirmed) - WD-40 Repeat; U3 snoRNP Associated Protein
+AT4G21190	EMB	EMB_essential	SeedGenes: EMB 1417 (Confirmed) - 5' Adenylsulfate Reductase (APR3)
+AT4G21710	EMB	EMB_essential	SeedGenes: EMB 1989 (Confirmed) - RNA Polymerase II Subunit
+AT4G21800	EMB	EMB_essential	SeedGenes: QQT 2 (Confirmed) - ATP/GTP Binding Protein
+AT4G22260	EMB	EMB_essential	SeedGenes: IM (Confirmed) - Chloroplast Homolog of Mitochondrial Alternative Oxidase
+AT4G22970	EMB	EMB_essential	SeedGenes: AESP (Confirmed) - Separase
+AT4G23100	EMB	EMB_essential	SeedGenes: RML 1 (Confirmed) - Gamma-Glutamylcysteine Synthetase
+AT4G23250	EMB	EMB_essential	SeedGenes: EMB 1290 (Not Confirmed) - Protein Kinase
+AT4G23430	EMB	EMB_essential	SeedGenes: TIC 32 (Confirmed) - Subunit of Tic Complex; Short chain dehydrogenase
+AT4G23660	EMB	EMB_essential	SeedGenes: AtPPT 1 (Not Confirmed) - Ubiquinone Biosynthesis
+AT4G24270	EMB	EMB_essential	SeedGenes: EMB 140 (Not Confirmed) - Uncertain
+AT4G25080	EMB	EMB_essential	SeedGenes: CHLM (Confirmed) - Magnesium Protoporphyrin IX Methyltransferase
+AT4G26300	EMB	EMB_essential	SeedGenes: EMB 1027 (Not Confirmed) - Arginyl tRNA Synthetase
+AT4G26500	EMB	EMB_essential	SeedGenes: EMB 1374 (Confirmed) - Activator of Plastidic and Mitochondrial Desulfurases (AtSufE)
+AT4G26900	EMB	EMB_essential	SeedGenes: HISN 4 (Confirmed) - Histidine Biosynthesis
+AT4G27010	EMB	EMB_essential	SeedGenes: EMB 2788 (Confirmed) - Uncertain
+AT4G28210	EMB	EMB_essential	SeedGenes: EMB 1923 (Confirmed) - Unknown
+AT4G28590	EMB	EMB_essential	SeedGenes: PDE 333 (Not Confirmed) - Unknown
+AT4G29060	EMB	EMB_essential	SeedGenes: EMB 2726 (Confirmed) - Translation Elongation Factor Ts
+AT4G29660	EMB	EMB_essential	SeedGenes: EMB 2752 (Not Confirmed) - Unknown
+AT4G29860	EMB	EMB_essential	SeedGenes: EMB 2757 (Confirmed) - Uncertain
+AT4G29910	EMB	EMB_essential	SeedGenes: EMB 2798 (Not Confirmed) - Origin of Replication Complex (ORC5)
+AT4G30580	EMB	EMB_essential	SeedGenes: EMB 1995 (Confirmed) - Lysophosphatidic Acid Acyltransferase (LPAAT)
+AT4G30720	EMB	EMB_essential	SeedGenes: PDE 327 (Confirmed) - Unknown
+AT4G31160	EMB	EMB_essential	SeedGenes: DCAF 1 (Confirmed) - Nuclear Ubiquitin E3 Ligase
+AT4G31770	EMB	EMB_essential	SeedGenes: DBR 1 (Confirmed) - Lariat Debranching Enzyme
+AT4G31780	EMB	EMB_essential	SeedGenes: EMB 2797 (Confirmed) - MGDG (Galactolipid) Synthesis
+AT4G32260	EMB	EMB_essential	SeedGenes: PDE 334 (Not Confirmed) - ATP Synthase Family
+AT4G32400	EMB	EMB_essential	SeedGenes: EMB 104 (Confirmed) - Transport Protein (SHS1/AtBT1)
+AT4G32410	EMB	EMB_essential	SeedGenes: RSW 1 (Confirmed) - Cellulose Synthase
+AT4G32720	EMB	EMB_essential	SeedGenes: AtLA 1 (Confirmed) - RNA Binding Protein
+AT4G33090	EMB	EMB_essential	SeedGenes: APM 1 (Confirmed) - Bifunctional M1 Aminopeptidase
+AT4G33460	EMB	EMB_essential	SeedGenes: EMB 2751 (Not Confirmed) - ABC Transporter
+AT4G33495	EMB	EMB_essential	SeedGenes: RPD 1 (Confirmed) - PORR Domain Protein
+AT4G33680	EMB	EMB_essential	SeedGenes: AGD 2 (Confirmed) - Class 2 Aminotransferase
+AT4G33990	EMB	EMB_essential	SeedGenes: EMB 2758 (Not Confirmed) - PPR Protein
+AT4G34620	EMB	EMB_essential	SeedGenes: SSR 16 (Confirmed) - Mitochondrial Ribosomal Protein S16
+AT4G34830	EMB	EMB_essential	SeedGenes: PDE 346 (Not Confirmed) - PPR Protein
+AT4G36480	EMB	EMB_essential	SeedGenes: EMB 2779 (Not Confirmed) - Serine Palmitoyltransferase (LCB1 Subunit)
+AT4G36630	EMB	EMB_essential	SeedGenes: EMB 2754 (Not Confirmed) - Putative Vacuolar Protein (VPS39)
+AT4G38160	EMB	EMB_essential	SeedGenes: PDE 191 (Confirmed) - Uncertain
+AT4G39120	EMB	EMB_essential	SeedGenes: IMPL 2 (Confirmed) - Histidinol-Phosphate Phosphatase
+AT4G39620	EMB	EMB_essential	SeedGenes: EMB 2453 (Confirmed) - PPR Protein
+AT4G39920	EMB	EMB_essential	SeedGenes: POR (Confirmed) - Tubulin Folding Cofactor C
+AT5G02120	EMB	EMB_essential	SeedGenes: PDE 335 (Not Confirmed) - Uncertain
+AT5G02190	EMB	EMB_essential	SeedGenes: AtASP 38 (Confirmed) - Aspartic Protease
+AT5G02250	EMB	EMB_essential	SeedGenes: EMB 2730 (Confirmed) - Ribonuclease II Family Protein
+AT5G03800	EMB	EMB_essential	SeedGenes: EMB 1899 (Confirmed) - PPR Protein
+AT5G04560	EMB	EMB_essential	SeedGenes: DME (Confirmed) - DNA Glycosylase
+AT5G05560	EMB	EMB_essential	SeedGenes: EMB 2771 (Not Confirmed) - E3 Ubiquitin Ligase (APC1)
+AT5G05680	EMB	EMB_essential	SeedGenes: EMB 2789 (Confirmed) - Nuclear Envelope Protein (Nup88)
+AT5G06240	EMB	EMB_essential	SeedGenes: EMB 2735 (Not Confirmed) - Unknown
+AT5G07280	EMB	EMB_essential	SeedGenes: EXS (Confirmed) - LRR Receptor Kinase
+AT5G07500	EMB	EMB_essential	SeedGenes: PEI (Confirmed) - Zinc Finger Transcriptional Regulator
+AT5G08130	EMB	EMB_essential	SeedGenes: BIM 1 (Not Confirmed) - bHLH Protein Interactor of Transcription Factors
+AT5G08170	EMB	EMB_essential	SeedGenes: EMB 1873 (Confirmed) - Agmatine Iminohydrolase
+AT5G08470	EMB	EMB_essential	SeedGenes: EMB 2817 (Confirmed) - AAA ATPase (PEX1)
+AT5G08610	EMB	EMB_essential	SeedGenes: PDE 340 (Not Confirmed) - DEAD Box RNA Helicase
+AT5G09790	EMB	EMB_essential	SeedGenes: PDE 336 (Not Confirmed) - SET-Domain Protein (ATXR5)
+AT5G09900	EMB	EMB_essential	SeedGenes: EMB 2107 (Confirmed) - 26S Proteasome Regulatory Subunit (RPN5)
+AT5G10330	EMB	EMB_essential	SeedGenes: HISN 6A (Confirmed) - Histidinol Phosphate Aminotransferase
+AT5G10360	EMB	EMB_essential	SeedGenes: EMB 3010 (Not Confirmed) - 40S Ribosomal Protein S6 (RPS6B)
+AT5G10480	EMB	EMB_essential	SeedGenes: PAS 2 (Confirmed) - 3-Hydroxy-Acyl-CoA Dehydratase
+AT5G11890	EMB	EMB_essential	SeedGenes: EMB 3135 (Not Confirmed) - Unknown
+AT5G12130	EMB	EMB_essential	SeedGenes: PDE 149 (Confirmed) - Transmembrane Transport Protein
+AT5G12250	CURATED_FAMILY	tubulin	TUB6 (beta tubulin 6)
+AT5G12840	EMB	EMB_essential	SeedGenes: EMB 2220 (Not Confirmed) - CCAAT Box Transcription Factor (Hap2A)
+AT5G13010	EMB	EMB_essential	SeedGenes: EMB 3011 (Confirmed) - RNA Helicase
+AT5G13480	EMB	EMB_essential	SeedGenes: FY (Confirmed) - Nuclear RNA Binding Protein
+AT5G13510	EMB	EMB_essential	SeedGenes: EMB 3136 (Not Confirmed) - Chloroplast 50S Ribosomal Protein L10
+AT5G13690	EMB	EMB_essential	SeedGenes: CYL 1 (Confirmed) - Alpha-N-Acetyl-Glucosaminidase (NAGLU)
+AT5G13710	EMB	EMB_essential	SeedGenes: SMT 1 (Confirmed) - Sterol Methyltransferase (Yeast Erg6p)
+AT5G14170	EMB	EMB_essential	SeedGenes: EMB 262 (Not Confirmed) - Chromodomain Remodeling Complex (CHC1)
+AT5G14320	EMB	EMB_essential	SeedGenes: EMB 3137 (Confirmed) - Chloroplast 30S Ribosomal Protein S13
+AT5G14760	EMB	EMB_essential	SeedGenes: AO (Confirmed) - NAD Biosynthesis
+AT5G14800	EMB	EMB_essential	SeedGenes: EMB 2772 (Confirmed) - Proline Biosynthesis
+AT5G15450	EMB	EMB_essential	SeedGenes: APG 6 (Confirmed) - Chloroplast Hsp101 Homolog (ClpB3)
+AT5G15540	EMB	EMB_essential	SeedGenes: EMB 2773 (Confirmed) - Adherin (AtSCC2)
+AT5G15920	EMB	EMB_essential	SeedGenes: EMB 2782 (Confirmed) - SMC Family Protein (MSS2)
+AT5G16390	CURATED_FAMILY	ACCase-CT	CAC1 / BCCP1 (biotin carboxyl carrier protein 1)
+AT5G16620	EMB	EMB_essential	SeedGenes: PDE 120 (Confirmed) - Chloroplast Protein Import (Tic40)
+AT5G16715	EMB	EMB_essential	SeedGenes: EMB 2247 (Confirmed) - Valine tRNA Synthetase
+AT5G16750	EMB	EMB_essential	SeedGenes: TOZ (Confirmed) - Uncertain
+AT5G17710	EMB	EMB_essential	SeedGenes: EMB 1241 (Confirmed) - Chloroplast GrpE Protein
+AT5G18570	EMB	EMB_essential	SeedGenes: EMB 3138 (Confirmed) - Chloroplast Obg-Like GTPase
+AT5G18580	EMB	EMB_essential	SeedGenes: FS 1 (Confirmed) - Protein Phosphatase (PP2A)
+AT5G18700	EMB	EMB_essential	SeedGenes: EMB 3013 (Confirmed) - Microtubule-Associated Kinase
+AT5G18820	EMB	EMB_essential	SeedGenes: EMB 3007 (Not Confirmed) - Chaperonin
+AT5G19530	CURATED_FAMILY	SPDS/PMT	ACL5 (thermospermine synthase ACL5)
+AT5G19620	EMB	EMB_essential	SeedGenes: OEP 80 (Confirmed) - Chloroplast Outer Envelope Protein
+AT5G19770	CURATED_FAMILY	tubulin	TUA3 (alpha tubulin 3)
+AT5G19780	CURATED_FAMILY	tubulin	TUA5 (alpha tubulin 5)
+AT5G19820	EMB	EMB_essential	SeedGenes: EMB 2734 (Confirmed) - Karyopherin Beta 3 Transportin
+AT5G20920	EMB	EMB_essential	SeedGenes: EMB 1401 (Not Confirmed) - Translation Initiation Factor (EIF-2 Beta)
+AT5G21140	EMB	EMB_essential	SeedGenes: EMB 1379 (Confirmed) - Uncertain
+AT5G22010	EMB	EMB_essential	SeedGenes: AtRFC 1 (Confirmed) - Replication Factor C Large Subunit
+AT5G22110	EMB	EMB_essential	SeedGenes: CYL 2 (Confirmed) - DNA Polymerase Epsilon, Subunit
+AT5G22130	EMB	EMB_essential	SeedGenes: PNT 1 (Confirmed) - ER-Localized Mannosyl Transferase
+AT5G22370	EMB	EMB_essential	SeedGenes: EMB 1705 (Confirmed) - GPN-Loop GTPase 2
+AT5G22640	EMB	EMB_essential	SeedGenes: EMB 1211 (Confirmed) - Uncertain
+AT5G22800	EMB	EMB_essential	SeedGenes: EMB 1030 (Confirmed) - Alanine tRNA Synthetase
+AT5G23720	EMB	EMB_essential	SeedGenes: PHS 1 (Not Confirmed) - MAPK Phosphatase
+AT5G23860	CURATED_FAMILY	tubulin	TUB8 (beta tubulin 8)
+AT5G23880	EMB	EMB_essential	SeedGenes: EMB 1265 (Not Confirmed) - Cleavage and Polyadenylation Specificity Factor
+AT5G23940	EMB	EMB_essential	SeedGenes: EMB 3009 (Not Confirmed) - BAHD Transferase Family
+AT5G24120	EMB	EMB_essential	SeedGenes: SIG 5 (Confirmed) - RNA Polymerase Factor
+AT5G24314	EMB	EMB_essential	SeedGenes: PDE 225 (Not Confirmed) - Unknown
+AT5G24400	EMB	EMB_essential	SeedGenes: EMB 2024 (Not Confirmed) - 6-Phosphogluconolactonase
+AT5G24670	EMB	EMB_essential	SeedGenes: EMB 2820 (Confirmed) - Adenosine Deaminase (TAD3)
+AT5G26742	EMB	EMB_essential	SeedGenes: EMB 1138 (Not Confirmed) - DEAD/DEAH Box RNA Helicase
+AT5G27270	EMB	EMB_essential	SeedGenes: EMB 976 (Not Confirmed) - PPR Protein
+AT5G27540	EMB	EMB_essential	SeedGenes: EMB 2473 (Confirmed) - Mitochondrial GTPase
+AT5G27720	EMB	EMB_essential	SeedGenes: EMB 1644 (Confirmed) - U6 snRNA Associated Protein (LSm4)
+AT5G27740	EMB	EMB_essential	SeedGenes: EMB 2775 (Confirmed) - DNA Replication Factor (RFC3)
+AT5G35220	EMB	EMB_essential	SeedGenes: EGY 1 (Confirmed) - ATP-Independent Metalloprotease
+AT5G35360	CURATED_FAMILY	ACCase-CT	CAC2 / BCCP2 (biotin carboxyl carrier protein 2)
+AT5G37510	EMB	EMB_essential	SeedGenes: EMB 1467 (Not Confirmed) - Mitochondrial NADH Dehydrogenase
+AT5G37630	EMB	EMB_essential	SeedGenes: EMB 2656 (Confirmed) - Chromosome Condensation
+AT5G39680	EMB	EMB_essential	SeedGenes: EMB 2744 (Not Confirmed) - PPR Protein
+AT5G39710	EMB	EMB_essential	SeedGenes: EMB 2745 (Not Confirmed) - PPR Protein
+AT5G39750	EMB	EMB_essential	SeedGenes: EMB 3008 (Not Confirmed) - MADS-Box Family Protein
+AT5G39980	EMB	EMB_essential	SeedGenes: EMB 3140 (Confirmed) - PPR Protein
+AT5G40160	EMB	EMB_essential	SeedGenes: EMB 506 (Confirmed) - Uncertain
+AT5G40480	EMB	EMB_essential	SeedGenes: EMB 3012 (Not Confirmed) - Nuclear Pore Complex Protein (Nup210)
+AT5G41480	EMB	EMB_essential	SeedGenes: GLA 1 (Confirmed) - Dihydrofolate Synthetase
+AT5G42080	EMB	EMB_essential	SeedGenes: ADL 1A (Confirmed) - Dynamin-Like Protein
+AT5G42600	CURATED_FAMILY	OSC	PEN3 / LUP5 (arabidiol synthase)
+AT5G42970	EMB	EMB_essential	SeedGenes: COP 8 (Confirmed) - Component of COP9 Signalosome
+AT5G44340	CURATED_FAMILY	tubulin	TUB4 (beta tubulin 4)
+AT5G48010	CURATED_FAMILY	OSC	BARS1 (baruol synthase 1)
+AT5G48230	EMB	EMB_essential	SeedGenes: EMB 1276 (Confirmed) - Acetyl CoA Acetyl Transferase (Thiolase)
+AT5G48600	EMB	EMB_essential	SeedGenes: SMC 4 (Confirmed) - Condensin
+AT5G48720	EMB	EMB_essential	SeedGenes: XRI 1 (Confirmed) - MND1/AHP2 Complex
+AT5G48840	EMB	EMB_essential	SeedGenes: PTS (Confirmed) - Pantothenate Synthetase
+AT5G49010	EMB	EMB_essential	SeedGenes: EMB 2812 (Not Confirmed) - DNA Replication, GINS Complex (SLD5)
+AT5G49160	EMB	EMB_essential	SeedGenes: MET 1 (Confirmed) - Methyltransferase
+AT5G49930	EMB	EMB_essential	SeedGenes: EMB 1441 (Confirmed) - Uncertain
+AT5G50210	EMB	EMB_essential	SeedGenes: QS (Confirmed) - NAD Biosynthesis
+AT5G50280	EMB	EMB_essential	SeedGenes: EMB 1006 (Not Confirmed) - PPR Protein
+AT5G50390	EMB	EMB_essential	SeedGenes: EMB 3141 (Not Confirmed) - PPR Protein
+AT5G50850	EMB	EMB_essential	SeedGenes: MAB 1 (Not Confirmed) - Mitochondrial PDH-E1 Beta
+AT5G50960	EMB	EMB_essential	SeedGenes: AtNBP 35 (Confirmed) - Cytosolic IronÐSulfur Cluster Assembly and Delivery
+AT5G51020	EMB	EMB_essential	SeedGenes: CRL (Confirmed) - Plastid Outer Envelope Membrane Protein
+AT5G51200	EMB	EMB_essential	SeedGenes: EMB 3142 (Not Confirmed) - Nuclear Pore Complex Protein (Nup205)
+AT5G51430	EMB	EMB_essential	SeedGenes: EYE (Confirmed) - Subunit of Golgi (COG) Complex
+AT5G52920	EMB	EMB_essential	SeedGenes: PKP 1 (Confirmed) - Plastidic Pyruvate Kinase B1 Subunit
+AT5G53120	CURATED_FAMILY	SPDS/PMT	SPMS / SPDS3 (spermine synthase)
+AT5G53400	EMB	EMB_essential	SeedGenes: BOB 1 (Confirmed) - Noncanonical Small Heat Shock Protein (NudC)
+AT5G53860	EMB	EMB_essential	SeedGenes: EMB 2737 (Confirmed) - Unknown
+AT5G55940	EMB	EMB_essential	SeedGenes: EMB 2731 (Not Confirmed) - Processome Protein (NOC4)
+AT5G56290	EMB	EMB_essential	SeedGenes: EMB 2790 (Confirmed) - Peroxisome Targeting
+AT5G56680	EMB	EMB_essential	SeedGenes: EMB 2755 (Not Confirmed) - Asparaginyl-tRNA Synthetase
+AT5G56930	EMB	EMB_essential	SeedGenes: EMB 1789 (Confirmed) - Uncertain
+AT5G57590	EMB	EMB_essential	SeedGenes: BIO 1 (Confirmed) - 7-KAP, DAP Aminotransferase; Dethiobiotin Synthetase
+AT5G57930	EMB	EMB_essential	SeedGenes: EMB 1629 (Confirmed) - Accumulation of Iron-Sulfur Complexes in Chloroplasts
+AT5G58230	EMB	EMB_essential	SeedGenes: MSI 1 (Confirmed) - WD-40 Repeat Protein
+AT5G58250	EMB	EMB_essential	SeedGenes: EMB 3143 (Not Confirmed) - Unknown
+AT5G59340	EMB	EMB_essential	SeedGenes: WOX 2 (Confirmed) - Homeodomain Protein
+AT5G59440	EMB	EMB_essential	SeedGenes: ZEUS 1 (Confirmed) - Thymidylate Kinase
+AT5G60540	EMB	EMB_essential	SeedGenes: EMB 2407 (Confirmed) - Imidazoleglycerol-Phosphate Synthase Subunit H; Pyroxidine Amidotransferase
+AT5G60600	EMB	EMB_essential	SeedGenes: CLB 4 (Confirmed) - Isoprenoid Biosynthesis
+AT5G61410	EMB	EMB_essential	SeedGenes: EMB 2728 (Confirmed) - Ribulose-5-Phosphate-3-Epimerase
+AT5G62410	EMB	EMB_essential	SeedGenes: TTN 3 (Confirmed) - SMC2 Condensin
+AT5G62440	EMB	EMB_essential	SeedGenes: DOM 1 (Confirmed) - Uncertain
+AT5G62690	CURATED_FAMILY	tubulin	TUB2 (beta tubulin 2)
+AT5G62700	CURATED_FAMILY	tubulin	TUB3 (beta tubulin 3)
+AT5G62790	EMB	EMB_essential	SeedGenes: PDE 129 (Confirmed) - 1-Deoxyxylulose 5-Phosphate Reductoisomerase
+AT5G62990	EMB	EMB_essential	SeedGenes: EMB 1692 (Confirmed) - PORR Domain Protein
+AT5G63050	EMB	EMB_essential	SeedGenes: EMB 2759 (Confirmed) - Unknown
+AT5G63420	EMB	EMB_essential	SeedGenes: EMB 2746 (Confirmed) - Metallo-Beta-Lactamase Family Protein
+AT5G64580	EMB	EMB_essential	SeedGenes: EMB 3144 (Confirmed) - Uncertain
+AT5G66055	EMB	EMB_essential	SeedGenes: EMB 2036 (Confirmed) - Uncertain
+AT5G66680	EMB	EMB_essential	SeedGenes: DGL 1 (Confirmed) - OST Complex Subunit
+AT5G67570	EMB	EMB_essential	SeedGenes: EMB 1408 (Confirmed) - PPR Protein
