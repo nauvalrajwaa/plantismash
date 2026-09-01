@@ -16,6 +16,7 @@ from antismash.generic_modules.tfbs_finder.enrichment import (
     log_poisson_pmf,
     poisson_upper_tail,
     benjamini_hochberg_fdr,
+    sample_background_windows,
     CREEnrichmentResult,
     CRE_TSV_HEADER,
 )
@@ -211,9 +212,53 @@ def test_neighbor_capping():
     print("test_neighbor_capping ok")
 
 
+def test_background_window_sampling():
+    # 1. Windows under budget -> return all, no cap
+    windows = [(100, 500), (1000, 1500), (2000, 2200)]  # lengths: 401, 501, 201 -> total 1103 bp
+    sampled, total_bp, sampled_bp = sample_background_windows(windows, 2000)
+    assert total_bp == 1103
+    assert sampled_bp == 1103
+    assert sampled == sorted(windows)
+
+    # 2. Total exactly equals budget -> return all
+    sampled, total_bp, sampled_bp = sample_background_windows(windows, 1103)
+    assert total_bp == 1103
+    assert sampled_bp == 1103
+    assert sampled == sorted(windows)
+
+    # 3. Windows over budget -> cap honored, sampled_bp >= budget (first window reaching it)
+    # Generate 100 intervals of size 1000 bp (total 100,000 bp)
+    large_windows = [(i * 2000, i * 2000 + 999) for i in range(100)]
+    budget = 30000  # sample ~30 kb
+    sampled, total_bp, sampled_bp = sample_background_windows(large_windows, budget)
+    assert total_bp == 100000
+    assert sampled_bp >= budget
+    assert sampled_bp < 40000
+    assert len(sampled) < len(large_windows)
+    # Window order must be sorted by coordinates
+    assert sampled == sorted(sampled)
+
+    # 4. Deterministic across multiple calls and shuffled input order
+    import random
+    shuffled_windows = list(large_windows)
+    random.seed(42)
+    random.shuffle(shuffled_windows)
+    sampled2, total_bp2, sampled_bp2 = sample_background_windows(shuffled_windows, budget)
+    assert sampled == sampled2
+    assert total_bp == total_bp2
+    assert sampled_bp == sampled_bp2
+
+    # 5. Empty windows or zero budget
+    assert sample_background_windows([], 1000) == ([], 0, 0)
+    assert sample_background_windows(windows, 0) == (sorted(windows), 1103, 1103)
+
+    print("test_background_window_sampling ok")
+
+
 if __name__ == "__main__":
     test_poisson_tail()
     test_bh_fdr()
     test_family_aggregation_and_math()
     test_neighbor_capping()
-    print("all CRE unit tests passed (4/4)")
+    test_background_window_sampling()
+    print("all CRE unit tests passed (5/5)")

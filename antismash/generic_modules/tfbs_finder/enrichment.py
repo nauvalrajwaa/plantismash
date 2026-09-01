@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import os
 import math
+import time
 import logging
 from typing import Any, Dict, List, Optional, Set, Tuple
 
@@ -29,6 +30,49 @@ from .tfbs_detection import (
 
 # Path to Ath TF motif information metadata
 INFO_PATH = utils.get_full_path(__file__, os.path.join("data", "Ath_TF_binding_motifs_information.txt"))
+DEFAULT_BG_MAX_BP = 3000000
+
+
+def sample_background_windows(windows: List[Tuple[int, int]],
+                              budget_bp: int) -> Tuple[List[Tuple[int, int]], int, int]:
+    """
+    Deterministically sample non-overlapping intervals (a, b) up to budget_bp.
+    If total bp <= budget_bp or budget_bp <= 0, returns all windows unchanged.
+
+    Sampling procedure:
+    - Sort windows by size descending: (length, a, b) for deterministic tie-breaking.
+    - Stride sampling: take every k-th window (k = ceil(total_bp / budget_bp))
+      cycling/stepping through the sorted list until the cumulative length reaches or exceeds budget_bp.
+    - Return (sampled_windows_sorted_by_coord, total_bp, sampled_bp).
+    """
+    total_bp = sum(b - a + 1 for a, b in windows)
+    if budget_bp <= 0 or total_bp <= budget_bp or not windows:
+        return sorted(windows), total_bp, total_bp
+
+    # Sort windows by size descending (length desc, then start coord asc for deterministic ties)
+    sorted_by_size = sorted(windows, key=lambda w: (-(w[1] - w[0] + 1), w[0], w[1]))
+    
+    k = int(math.ceil(float(total_bp) / float(budget_bp)))
+    if k < 1:
+        k = 1
+
+    selected: List[Tuple[int, int]] = []
+    selected_bp = 0
+    
+    # Stride pick: first pass with stride k
+    for offset in range(k):
+        for idx in range(offset, len(sorted_by_size), k):
+            w = sorted_by_size[idx]
+            selected.append(w)
+            selected_bp += (w[1] - w[0] + 1)
+            if selected_bp >= budget_bp:
+                break
+        if selected_bp >= budget_bp:
+            break
+
+    # Sort selected windows by coordinate for clean sequential scanning
+    selected.sort(key=lambda w: (w[0], w[1]))
+    return selected, total_bp, selected_bp
 
 
 def load_tf_family_mapping(info_path: str = INFO_PATH) -> Dict[str, str]:
@@ -158,9 +202,11 @@ def benjamini_hochberg_fdr(p_values: List[float]) -> List[float]:
 def compute_record_background_rates(record: SeqRecord,
                                     upstream_bp: int,
                                     pvalue: float,
-                                    matrices: List[Matrix]) -> Dict[str, float]:
+                                    matrices: List[Matrix],
+                                    options: Optional[Any] = None) -> Dict[str, float]:
     """
-    Precompute per-motif background hit rates (hits/kb) across all non-cluster promoter windows.
+    Precompute per-motif background hit rates (hits/kb) across non-cluster promoter windows.
+    Applies a deterministic sampling budget (TFBS_BG_MAX_BP) to keep background runtime bounded.
     Runs once per record.
     """
     if not _HAS_MOODS or not matrices:
@@ -195,18 +241,64 @@ def compute_record_background_rates(record: SeqRecord,
             raw_windows.append(w)
 
     merged_windows = _merge_intervals(raw_windows)
-    total_kb = sum(b - a + 1 for a, b in merged_windows) / 1000.0
-    if total_kb <= 0:
+    if not merged_windows:
         return {}
 
+    budget_bp = int(os.environ.get("TFBS_BG_MAX_BP", str(DEFAULT_BG_MAX_BP)) or str(DEFAULT_BG_MAX_BP))
+    sampled_windows, total_avail_bp, scanned_bp = sample_background_windows(merged_windows, budget_bp)
+
+    n_avail = len(merged_windows)
+    n_sampled = len(sampled_windows)
+    if scanned_bp < total_avail_bp:
+        logging.warning(
+            "TFBS: background window cap active — available: %d windows (%d bp, ~%.2f Mb), "
+            "sampled: %d windows (%d bp, ~%.2f Mb) for rate estimation",
+            n_avail, total_avail_bp, total_avail_bp / 1e6,
+            n_sampled, scanned_bp, scanned_bp / 1e6
+        )
+    else:
+        logging.warning(
+            "TFBS: background scan using all available: %d windows (%d bp, ~%.2f Mb)",
+            n_avail, total_avail_bp, total_avail_bp / 1e6
+        )
+
+    scanned_kb = scanned_bp / 1000.0
+    if scanned_kb <= 0:
+        return {}
+
+    rec_idx = getattr(options, "record_idx", 0) if options is not None else 0
+    utils.log_status("TFBS background scan for contig #%d: %d intervals, ~%.2f Mb"
+                     % (rec_idx, n_sampled, scanned_bp / 1e6))
+
+    t_bg_start = time.time()
     motif_hits: Dict[str, int] = {m.name: 0 for m in matrices}
-    for a, b in merged_windows:
+    
+    prog_interval = max(1, n_sampled // 10)  # ~10% intervals or at least 1
+    prog_interval = min(prog_interval, 20)    # or every 20 intervals
+
+    curr_scanned_bp = 0
+    total_raw_bg_hits = 0
+
+    for idx, (a, b) in enumerate(sampled_windows, 1):
         seg_hits = _scan_segment_with_pwms(record, a, b, matrices, pvalue)
+        total_raw_bg_hits += len(seg_hits)
+        curr_scanned_bp += (b - a + 1)
         for mat_idx, _, _, _ in seg_hits:
             mname = matrices[mat_idx].name
             motif_hits[mname] = motif_hits.get(mname, 0) + 1
 
-    rates = {mname: count / total_kb for mname, count in motif_hits.items()}
+        if idx % prog_interval == 0 or idx == n_sampled:
+            elapsed = time.time() - t_bg_start
+            logging.warning(
+                "TFBS: background scanned %d/%d intervals (%.1f%%), bp=%d, hits=%d, elapsed=%.1fs",
+                idx, n_sampled, 100.0 * idx / n_sampled, curr_scanned_bp, total_raw_bg_hits, elapsed
+            )
+
+    t_bg_elapsed = time.time() - t_bg_start
+    logging.warning("⏱ TFBS stage 'background' took %.2fs (%d intervals, %d bp, %d raw hits)",
+                    t_bg_elapsed, n_sampled, scanned_bp, total_raw_bg_hits)
+
+    rates = {mname: count / scanned_kb for mname, count in motif_hits.items()}
     return rates
 
 
@@ -274,7 +366,9 @@ def run_cre_enrichment(record: SeqRecord,
         family_motifs[f].append(mname)
 
     # 1. Background rates (precomputed once per record)
-    bg_rates = compute_record_background_rates(record, upstream_bp, pvalue, matrices)
+    bg_rates = compute_record_background_rates(record, upstream_bp, pvalue, matrices, options=options)
+
+    t_stat_start = time.time()
 
     seqlen = len(record.seq)
     clusters = utils.get_sorted_cluster_features(record)
@@ -391,6 +485,8 @@ def run_cre_enrichment(record: SeqRecord,
             })
 
     if not cluster_tests:
+        t_stat_elapsed = time.time() - t_stat_start
+        logging.warning("⏱ TFBS stage 'enrichment_statistics' took %.2fs (0 tests)", t_stat_elapsed)
         return []
 
     # 2. Multiple testing correction (BH-FDR across all cluster x family tests)
@@ -428,6 +524,9 @@ def run_cre_enrichment(record: SeqRecord,
         return (c_int, r.q_value)
 
     results.sort(key=sort_key)
+    t_stat_elapsed = time.time() - t_stat_start
+    logging.warning("⏱ TFBS stage 'enrichment_statistics' took %.2fs (%d tests evaluated)",
+                    t_stat_elapsed, len(results))
     return results
 
 
@@ -443,6 +542,7 @@ def write_cre_enrichment_tsv(results: List[CREEnrichmentResult], outdir: str) ->
     Write CRE enrichment results to <output>/tfbs/cre_enrichment.tsv.
     Always writes header even when results list is empty.
     """
+    t_tsv_start = time.time()
     tfbs_dir = os.path.join(outdir, "tfbs")
     os.makedirs(tfbs_dir, exist_ok=True)
     tsv_path = os.path.join(tfbs_dir, "cre_enrichment.tsv")
@@ -455,5 +555,9 @@ def write_cre_enrichment_tsv(results: List[CREEnrichmentResult], outdir: str) ->
         logging.info("TFBS: written CRE enrichment TSV to %s (%d rows)", tsv_path, len(results))
     except Exception as e:
         logging.warning("TFBS: failed to write CRE enrichment TSV: %s", e)
+
+    t_tsv_elapsed = time.time() - t_tsv_start
+    logging.warning("⏱ TFBS stage 'tsv_writes' took %.2fs (%s, %d rows)",
+                    t_tsv_elapsed, os.path.basename(tsv_path), len(results))
 
     return tsv_path

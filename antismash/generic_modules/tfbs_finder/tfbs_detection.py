@@ -34,6 +34,7 @@ import os
 import json
 import logging
 import tempfile
+import time
 
 import numpy as np
 from Bio.Seq import Seq
@@ -528,6 +529,7 @@ def run_tfbs_finder(record: SeqRecord,
     all_raw_hits: List[Tuple[int, int, int, float]] = []
     total_bp = 0
     total_int = 0
+    t_scan_start = time.time()
 
     for c in clusters:
         cidx = utils.get_cluster_number(c)
@@ -536,16 +538,16 @@ def run_tfbs_finder(record: SeqRecord,
 
         raw_windows, cds_count = _collect_windows_for_cluster(record, c, start_overlap)
         if not raw_windows:
-            logging.info("TFBS: cluster #%d %d-%d: no CDS windows; skip",
-                         cidx, cstart, cend)
+            logging.warning("TFBS: cluster #%d %d-%d: no CDS windows; skip",
+                            cidx, cstart, cend)
             continue
 
         merged = _merge_intervals(raw_windows)
         bp = sum(b - a + 1 for a, b in merged)
         total_bp += bp
         total_int += len(merged)
-        logging.info("TFBS: cluster #%d %d-%d: CDS windows=%d; merged intervals=%d; bp=%d",
-                     cidx, cstart, cend, cds_count, len(merged), bp)
+        logging.warning("TFBS: cluster #%d %d-%d: CDS windows=%d; merged intervals=%d; bp=%d",
+                        cidx, cstart, cend, cds_count, len(merged), bp)
 
         # Optional debug throttle: limit intervals per cluster
         max_intervals = int(os.environ.get("TFBS_MAX_INTERVALS", "0") or "0")
@@ -557,9 +559,13 @@ def run_tfbs_finder(record: SeqRecord,
             all_raw_hits.extend(seg_hits)
             scanned_bp += (b - a + 1)
             if j % 20 == 0 or j == len(intervals):
-                logging.info("TFBS: cluster #%d scanned %d/%d intervals (%.1f%%), bp=%d, hits=%d",
-                             cidx, j, len(intervals), 100.0 * j / len(intervals),
-                             scanned_bp, len(all_raw_hits))
+                logging.warning("TFBS: cluster #%d scanned %d/%d intervals (%.1f%%), bp=%d, hits=%d",
+                                cidx, j, len(intervals), 100.0 * j / len(intervals),
+                                scanned_bp, len(all_raw_hits))
+
+    t_scan_elapsed = time.time() - t_scan_start
+    logging.warning("⏱ TFBS stage 'cluster_scan' took %.2fs (%d intervals, %d bp, %d raw hits)",
+                    t_scan_elapsed, total_int, total_bp, len(all_raw_hits))
 
     # Deduplicate across clusters (same motif, start, strand, score)
     if all_raw_hits:
@@ -568,11 +574,12 @@ def run_tfbs_finder(record: SeqRecord,
             as_set[(mi, st, sd, round(sc, 4))] = (mi, st, sd, sc)
         all_raw_hits = list(as_set.values())
 
-    logging.info("TFBS: scanned total ~%d bp across %d merged intervals × %d motifs; raw hits=%d",
-                 total_bp, total_int, len(matrices), len(all_raw_hits))
-
     logging.warning("🧪 Filtering hits")
+    t_filter_start = time.time()
     hits = _filter_hits_to_objects(matrices, all_raw_hits)
+    t_filter_elapsed = time.time() - t_filter_start
+    logging.warning("⏱ TFBS stage 'hit_filtering' took %.2fs (%d hits)",
+                    t_filter_elapsed, len(hits))
 
     # Attach to record.annotations for downstream HTML (best effort)
     try:
