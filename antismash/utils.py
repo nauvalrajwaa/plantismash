@@ -1177,6 +1177,11 @@ def zip_path(dir_path, name):
             archive.write(dir_path)
             archive.close()
 
+        # Overwrite stale zips from previous runs into the same output folder
+        real_dst = os.path.join(dir_path, os.path.basename(name))
+        if os.path.isfile(real_dst):
+            os.remove(real_dst)
+
         shutil.move(name, dir_path)
 
 def log_status(status, level='running'):

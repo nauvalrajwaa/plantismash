@@ -223,8 +223,6 @@ def add_overview_entry(d, cluster, odd):
     # closest cluster match BGCid description
     td = pq('<td>')
 
-    print(("Raw value for cluster['knowncluster']:", cluster['knowncluster']))
-
     # Sanitize the knowncluster value for XML compatibility
     try:
         sanitized_knowncluster = sanitize_for_xml(cluster['knowncluster'])
