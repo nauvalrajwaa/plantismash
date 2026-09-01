@@ -71,7 +71,8 @@ include = ["antismash*"]
 antismash = [
   "**/*.html", "**/*.tpl", "**/*.css", "**/*.js", "**/*.json",
   "**/*.txt",  "**/*.tsv", "**/*.csv", "**/*.faa", "**/*.dmnd",
-  "**/*.hmm", "**/*.pfam", "**/*.png", "**/*.svg", "**/*.cfg"
+  "**/*.hmm", "**/*.pfam", "**/*.png", "**/*.svg", "**/*.cfg",
+  "**/*.afa", "**/*.pep", "**/*.xls", "**/RAxML_*", "**/*.refpkg/*"
 ]
 
 [tool.setuptools.dynamic]
