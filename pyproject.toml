@@ -70,8 +70,8 @@ include = ["antismash*"]
 # Ship all the assets plantiSMASH needs at runtime.
 antismash = [
   "**/*.html", "**/*.tpl", "**/*.css", "**/*.js", "**/*.json",
-  "**/*.txt",  "**/*.hmm", "**/*.pfam", "**/*.png", "**/*.svg",
-  "**/*.cfg"
+  "**/*.txt",  "**/*.tsv", "**/*.csv", "**/*.faa", "**/*.dmnd",
+  "**/*.hmm", "**/*.pfam", "**/*.png", "**/*.svg", "**/*.cfg"
 ]
 
 [tool.setuptools.dynamic]
