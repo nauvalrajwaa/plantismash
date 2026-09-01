@@ -136,7 +136,7 @@ def write_recruitment_tsvs(
 
 
 def generate_details_div(
-    cluster_feature: SeqFeature,
+    cluster_feature: Any,
     seq_record: SeqRecord,
     options: Any,
     js_domains: Any = None,
@@ -156,8 +156,12 @@ def generate_details_div(
         essential_hits: List[EssentialHit] = extradata.get("RecruitmentEssentialHits", [])
 
         # Find flag for this cluster
-        from antismash import utils
-        c_num = utils.get_cluster_number(cluster_feature)
+        if isinstance(cluster_feature, dict):
+            c_num = int(cluster_feature.get("idx", 0))
+        else:
+            from antismash import utils
+            c_num = utils.get_cluster_number(cluster_feature)
+
         matching_flags = [f for f in cluster_flags if f.cluster_idx == c_num]
         if not matching_flags or matching_flags[0].n_candidates == 0:
             return details
