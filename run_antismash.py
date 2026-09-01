@@ -317,7 +317,7 @@ def main():
                         metavar="TYPES",
                         dest='enabled_detection_models',
                         action=ValidateDetectionTypes(detection_models),
-                        default=["default"],
+                        default=["plants"],
                         help="Select user-defined hmm detection models to be used.")
     group.add_argument('--enable',
                        metavar="TYPES",
