@@ -293,8 +293,6 @@ def compute_record_background_rates(record: SeqRecord,
         motif_hits[mname] = motif_hits.get(mname, 0) + 1
 
     t_bg_elapsed = time.time() - t_bg_start
-
-    t_bg_elapsed = time.time() - t_bg_start
     logging.warning("⏱ TFBS stage 'background' took %.2fs (%d intervals, %d bp, %d raw hits)",
                     t_bg_elapsed, n_sampled, scanned_bp, total_raw_bg_hits)
 

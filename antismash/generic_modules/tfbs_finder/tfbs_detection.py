@@ -59,11 +59,12 @@ _MOODS_WARNED = False
 from antismash import utils
 
 # --------------------------------------------------------------------------
-# Constants / cache
+# Constants / cache / multiprocessing global
 # --------------------------------------------------------------------------
 
 PWM_PATH = utils.get_full_path(__file__, os.path.join("data", "Athaliana_motifs.manualfromexcluded.json"))
 _MATRIX_CACHE: Dict[str, List["Matrix"]] = {}   # cache parsed matrices per file path
+_POOL_MATRICES: Optional[List["Matrix"]] = None  # inherited copy-on-write by worker processes after fork
 
 
 # --------------------------------------------------------------------------
@@ -354,7 +355,7 @@ def _collect_windows_for_cluster(record: SeqRecord,
     return raw, cds_count
 
 
-def _safe_bg_from_seq(seq: Seq) -> List[float]:
+def _safe_bg_from_seq(seq: Any) -> List[float]:
     s = str(seq).upper()
     nA = s.count("A")
     nC = s.count("C")
@@ -425,21 +426,40 @@ def _load_matrices_cached(json_file: str) -> List[Matrix]:
     return mats
 
 
-def _scan_segment_with_pwms(record: SeqRecord,
-                            seg_a: int,
-                            seg_b: int,
-                            matrices: List[Matrix],
-                            pvalue: float) -> List[Tuple[int, int, int, float]]:
+def _absolute_hit(seg_a: int,
+                  motif_idx: int,
+                  rel_pos: int,
+                  strand: int,
+                  score: float,
+                  fwd_len: int = 0,
+                  motif_len: int = 0) -> Tuple[int, int, int, float]:
     """
-    Scan record.seq[seg_a:seg_b+1] once across all PWMs and return raw hits:
+    Compute absolute coordinate for a local relative hit.
+    For strand=+1, absolute pos = seg_a + rel_pos.
+    For strand=-1, absolute pos = seg_a + (fwd_len - rel_pos - motif_len).
+    """
+    if strand == 1:
+        abs_pos = seg_a + rel_pos
+    else:
+        abs_pos = seg_a + (fwd_len - rel_pos - motif_len)
+    return (int(motif_idx), int(abs_pos), int(strand), float(score))
+
+
+def _scan_segment_str_with_pwms(seg_a: int,
+                                seg_b: int,
+                                seq_str: str,
+                                matrices: List[Matrix],
+                                pvalue: float) -> List[Tuple[int, int, int, float]]:
+    """
+    Scan a DNA sequence string representing slice [seg_a:seg_b+1] across PWMs.
+    Returns raw hits:
       List[(matrix_idx, absolute_start, strand(+1/-1), score)]
     Uses per-segment background and per-motif MOODS thresholds from p-value.
     """
-    seq = record.seq[seg_a:seg_b+1]
-    background = _safe_bg_from_seq(seq)  # A,C,G,T
+    fwd_seq = str(seq_str)
+    background = _safe_bg_from_seq(fwd_seq)  # A,C,G,T
     hits: List[Tuple[int, int, int, float]] = []
-    rc_seq = str(Seq(str(seq)).reverse_complement())
-    fwd_seq = str(seq)
+    rc_seq = str(Seq(fwd_seq).reverse_complement())
 
     # Debug throttle (optional): limit number of motifs via env
     max_pwms = int(os.environ.get("TFBS_MAX_MOTIFS", "0") or "0")
@@ -455,12 +475,11 @@ def _scan_segment_with_pwms(record: SeqRecord,
 
             fwd = scan.scan_dna(fwd_seq, [lod], background, thresholds, 7)[0]
             for mh in fwd:
-                hits.append((idx, seg_a + mh.pos, 1, mh.score))
+                hits.append(_absolute_hit(seg_a, idx, mh.pos, 1, mh.score))
 
             rev = scan.scan_dna(rc_seq, [lod], background, thresholds, 7)[0]
             for mh in rev:
-                abs_pos = seg_a + (len(fwd_seq) - mh.pos - motif_len)
-                hits.append((idx, abs_pos, -1, mh.score))
+                hits.append(_absolute_hit(seg_a, idx, mh.pos, -1, mh.score, len(fwd_seq), motif_len))
 
         except Exception as e:
             logging.error("MOODS failed for %s: %s", m.name, e)
@@ -468,10 +487,39 @@ def _scan_segment_with_pwms(record: SeqRecord,
     return hits
 
 
-def _scan_interval_worker(args: Tuple[SeqRecord, int, int, List[Matrix], float]) -> List[Tuple[int, int, int, float]]:
-    """Worker task scanning one interval with MOODS; returns raw hits."""
-    record, a, b, matrices, pvalue = args
-    return _scan_segment_with_pwms(record, a, b, matrices, pvalue)
+def _scan_segment_with_pwms(record: SeqRecord,
+                            seg_a: int,
+                            seg_b: int,
+                            matrices: List[Matrix],
+                            pvalue: float) -> List[Tuple[int, int, int, float]]:
+    """
+    Scan record.seq[seg_a:seg_b+1] once across all PWMs and return raw hits:
+      List[(matrix_idx, absolute_start, strand(+1/-1), score)]
+    Uses per-segment background and per-motif MOODS thresholds from p-value.
+    """
+    seq_str = str(record.seq[seg_a:seg_b+1])
+    return _scan_segment_str_with_pwms(seg_a, seg_b, seq_str, matrices, pvalue)
+
+
+def _scan_interval_worker(args: Tuple[int, int, str, float]) -> List[Tuple[int, int, int, float]]:
+    """
+    Worker task scanning one interval with MOODS; returns raw hits.
+    Reads preloaded matrices from module-level `_POOL_MATRICES` inherited via fork.
+    """
+    global _POOL_MATRICES
+    a, b, seq_str, pvalue = args
+    matrices = _POOL_MATRICES if _POOL_MATRICES is not None else []
+    return _scan_segment_str_with_pwms(a, b, seq_str, matrices, pvalue)
+
+
+def _build_worker_tasks(record: SeqRecord,
+                        intervals: List[Tuple[int, int]],
+                        pvalue: float) -> List[Tuple[int, int, str, float]]:
+    """
+    Build lightweight per-interval worker args: (a, b, seq_slice_str, pvalue).
+    Avoids passing SeqRecord or large parent object graphs to workers.
+    """
+    return [(int(a), int(b), str(record.seq[a:b+1]), float(pvalue)) for a, b in intervals]
 
 
 def scan_intervals_parallel(record: SeqRecord,
@@ -489,19 +537,24 @@ def scan_intervals_parallel(record: SeqRecord,
 
     Determinism:
       - Sequential path preserves exact interval evaluation order.
-      - Parallel path maps intervals with imap/starmap preserving input interval order,
+      - Parallel path maps intervals with imap preserving input interval order,
         then merges per-interval hit lists.
       - Output intervals are sorted prior to scanning, ensuring identical ordering
         regardless of parallel or sequential execution.
 
-    Fork safety:
-      - `matrices` must be loaded in the PARENT process before Pool creation.
-      - Uses `multiprocessing.get_context('fork')` when available (Linux / POSIX copy-on-write).
+    Fork safety & Memory/IPC efficiency:
+      - Slices strings in parent before pool creation; worker args contain only
+        (a, b, seq_slice_str, pvalue) (~2 KB per interval, no SeqRecord).
+      - `matrices` stored in module-level `_POOL_MATRICES` before Pool creation,
+        inherited copy-on-write across workers via multiprocessing fork context.
       - If Pool creation/mapping fails (e.g. non-fork platform or environment restriction),
         gracefully logs a warning and falls back to sequential execution.
     """
     if not intervals or not _HAS_MOODS or not matrices:
         return []
+
+    global _POOL_MATRICES
+    _POOL_MATRICES = matrices
 
     # Sort intervals for deterministic processing
     sorted_intervals = sorted(intervals, key=lambda x: (x[0], x[1]))
@@ -526,12 +579,12 @@ def scan_intervals_parallel(record: SeqRecord,
                                 scanned_bp, len(all_hits), elapsed)
         return all_hits
 
-    # Parallel path
+    # Parallel path: slice small string payloads in parent to avoid shipping SeqRecord / large graphs
     t_start = time.time()
     n_workers = min(int(cpus), n_intervals)
     chunksize = max(1, n_intervals // (n_workers * 8))
 
-    tasks = [(record, a, b, matrices, pvalue) for a, b in sorted_intervals]
+    tasks = _build_worker_tasks(record, sorted_intervals, pvalue)
 
     try:
         # Fork-safety: matrices are loaded in the PARENT before Pool creation (inherited copy-on-write)
@@ -624,6 +677,7 @@ def run_tfbs_finder(record: SeqRecord,
     total_int = 0
     t_scan_start = time.time()
 
+    total_raw_hits = 0
     cluster_hit_counts: List[Tuple[int, int]] = []
     for c in clusters:
         cidx = utils.get_cluster_number(c)
@@ -655,6 +709,7 @@ def run_tfbs_finder(record: SeqRecord,
             cpus=cpus,
             desc=f"cluster #{cidx}",
         )
+        total_raw_hits += len(cluster_hits)
         cluster_hit_counts.append((cidx, len(cluster_hits)))
         all_raw_hits.extend(cluster_hits)
 
@@ -679,7 +734,7 @@ def run_tfbs_finder(record: SeqRecord,
 
     t_scan_elapsed = time.time() - t_scan_start
     logging.warning("⏱ TFBS stage 'cluster_scan' took %.2fs (%d intervals, %d bp, %d raw hits)",
-                    t_scan_elapsed, total_int, total_bp, len(all_raw_hits))
+                    t_scan_elapsed, total_int, total_bp, total_raw_hits)
 
     # Deduplicate across clusters (same motif, start, strand, score)
     if all_raw_hits:

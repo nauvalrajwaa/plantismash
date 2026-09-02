@@ -28,6 +28,8 @@ from antismash.generic_modules.tfbs_finder.tfbs_detection import (
     _merge_intervals,
     _cds_tss_and_strand,
     _collect_windows_for_cluster,
+    _build_worker_tasks,
+    _absolute_hit,
     build_upstream_caps,
     get_cds_capped_promoter_window,
 )
@@ -354,6 +356,64 @@ def test_finalize_tfbs_run_outputs_multi_record():
     print("test_finalize_tfbs_run_outputs_multi_record ok")
 
 
+def test_parallel_worker_args_and_absolute_coords():
+    # 1. Test _build_worker_tasks slicing on a synthetic record
+    seq_str = "ACGTACGTNNNNACGT"
+    record = SeqRecord(Seq(seq_str), id="test_rec")
+    intervals = [(2, 6), (8, 12)]
+    pvalue = 0.001
+
+    tasks = _build_worker_tasks(record, intervals, pvalue)
+    assert len(tasks) == 2
+
+    # Verify task 0: (a, b, slice_str, pvalue)
+    # interval 2..6 inclusive -> length 5 (indices 2,3,4,5,6)
+    expected_slice_0 = str(record.seq[2:6+1])
+    assert tasks[0] == (2, 6, expected_slice_0, 0.001)
+    assert tasks[0][2] == "GTACG"
+
+    # Verify task 1: (8, 12) inclusive -> length 5 (indices 8,9,10,11,12)
+    expected_slice_1 = str(record.seq[8:12+1])
+    assert tasks[1] == (8, 12, expected_slice_1, 0.001)
+    assert tasks[1][2] == "NNNNA"
+
+    # 2. Assert all worker arg elements are primitive types (no SeqRecord or large graphs)
+    for task in tasks:
+        assert isinstance(task, tuple)
+        assert len(task) == 4
+        a, b, s, p = task
+        assert type(a) is int
+        assert type(b) is int
+        assert type(s) is str
+        assert type(p) is float
+        # Ensure no SeqRecord is referenced in task
+        assert not hasattr(task, "seq")
+        assert not hasattr(s, "seq")
+
+    # 3. Test _absolute_hit coordinate math for +1 and -1 strands
+    seg_a = 1000
+    motif_idx = 42
+    rel_pos = 15
+    score = 8.75
+    fwd_len = 200
+    motif_len = 10
+
+    # Strand +1: abs_pos = seg_a + rel_pos = 1000 + 15 = 1015
+    hit_plus = _absolute_hit(seg_a, motif_idx, rel_pos, 1, score, fwd_len, motif_len)
+    assert hit_plus == (42, 1015, 1, 8.75)
+    assert type(hit_plus[0]) is int
+    assert type(hit_plus[1]) is int
+    assert type(hit_plus[2]) is int
+    assert type(hit_plus[3]) is float
+
+    # Strand -1: abs_pos = seg_a + (fwd_len - rel_pos - motif_len)
+    # = 1000 + (200 - 15 - 10) = 1000 + 175 = 1175
+    hit_minus = _absolute_hit(seg_a, motif_idx, rel_pos, -1, score, fwd_len, motif_len)
+    assert hit_minus == (42, 1175, -1, 8.75)
+
+    print("test_parallel_worker_args_and_absolute_coords ok")
+
+
 if __name__ == "__main__":
     test_poisson_tail()
     test_bh_fdr()
@@ -361,4 +421,5 @@ if __name__ == "__main__":
     test_neighbor_capping()
     test_background_window_sampling()
     test_finalize_tfbs_run_outputs_multi_record()
-    print("all CRE unit tests passed (6/6)")
+    test_parallel_worker_args_and_absolute_coords()
+    print("all CRE unit tests passed (7/7)")
