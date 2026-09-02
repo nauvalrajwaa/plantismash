@@ -8,6 +8,8 @@ and promoter neighbor capping without requiring the optional MOODS C extension.
 import math
 import sys
 import os
+import tempfile
+from argparse import Namespace
 
 # Ensure repo is importable
 sys.path.insert(0, ".")
@@ -17,9 +19,11 @@ from antismash.generic_modules.tfbs_finder.enrichment import (
     poisson_upper_tail,
     benjamini_hochberg_fdr,
     sample_background_windows,
+    write_cre_enrichment_tsv,
     CREEnrichmentResult,
     CRE_TSV_HEADER,
 )
+from antismash.generic_modules.tfbs_finder import finalize_tfbs_run_outputs
 from antismash.generic_modules.tfbs_finder.tfbs_detection import (
     _merge_intervals,
     _cds_tss_and_strand,
@@ -255,10 +259,106 @@ def test_background_window_sampling():
     print("test_background_window_sampling ok")
 
 
+def test_finalize_tfbs_run_outputs_multi_record():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # Create synthetic SeqRecords
+        rec1 = SeqRecord(Seq("N" * 1000), id="rec1")
+        rec2 = SeqRecord(Seq("N" * 1000), id="rec2")
+        seq_records = [rec1, rec2]
+
+        # Fabricate CREEnrichmentResults for rec1 and rec2
+        r1_c1 = CREEnrichmentResult(
+            record="rec1",
+            cluster="1",
+            product="plants/plant",
+            n_quorum_genes=5,
+            promoter_kb_scanned=5.0,
+            tf_family="WRKY",
+            n_motifs=10,
+            hits_obs=20,
+            hits_exp=10.0,
+            fold_enrichment=2.0,
+            p_value=0.001,
+            q_value=0.01,
+            coherence_fraction=0.8,
+            top_motifs="AT1G01;AT1G02",
+            max_confidence="Strong",
+        )
+        r1_c2 = CREEnrichmentResult(
+            record="rec1",
+            cluster="2",
+            product="plants/alkaloid",
+            n_quorum_genes=4,
+            promoter_kb_scanned=4.0,
+            tf_family="MYB",
+            n_motifs=8,
+            hits_obs=15,
+            hits_exp=8.0,
+            fold_enrichment=1.875,
+            p_value=0.005,
+            q_value=0.02,
+            coherence_fraction=0.75,
+            top_motifs="AT2G01",
+            max_confidence="Medium",
+        )
+        r2_c1 = CREEnrichmentResult(
+            record="rec2",
+            cluster="1",
+            product="plants/saccharide",
+            n_quorum_genes=6,
+            promoter_kb_scanned=6.0,
+            tf_family="bHLH",
+            n_motifs=12,
+            hits_obs=0,
+            hits_exp=5.0,
+            fold_enrichment=0.0,
+            p_value=1.0,
+            q_value=1.0,
+            coherence_fraction=0.0,
+            top_motifs="-",
+            max_confidence="-",
+        )
+
+        options = Namespace(
+            tfbs_detection=True,
+            outputfoldername=tmpdir,
+            full_outputfolder_path=tmpdir,
+            extrarecord={
+                "rec1": Namespace(extradata={"CREEnrichmentResults": [r1_c1, r1_c2]}),
+                "rec2": Namespace(extradata={"CREEnrichmentResults": [r2_c1]}),
+            },
+        )
+
+        finalize_tfbs_run_outputs(seq_records, options)
+
+        tsv_path = os.path.join(tmpdir, "tfbs", "cre_enrichment.tsv")
+        assert os.path.isfile(tsv_path), f"File not found: {tsv_path}"
+
+        with open(tsv_path, "r", encoding="utf-8") as fh:
+            lines = [line.strip().split("\t") for line in fh if line.strip()]
+
+        # Header + 3 data rows from both records
+        assert len(lines) == 4, f"Expected 4 lines (header + 3 rows), got {len(lines)}"
+        assert lines[0] == CRE_TSV_HEADER
+
+        # Sort order check: (record, cluster, q_value)
+        # Row 1: rec1, cluster 1
+        assert lines[1][0] == "rec1" and lines[1][1] == "1" and lines[1][5] == "WRKY"
+        # Row 2: rec1, cluster 2
+        assert lines[2][0] == "rec1" and lines[2][1] == "2" and lines[2][5] == "MYB"
+        # Row 3: rec2, cluster 1
+        assert lines[3][0] == "rec2" and lines[3][1] == "1" and lines[3][5] == "bHLH"
+        # Check max_confidence for hits_obs=0 is '-'
+        assert lines[3][14] == "-"
+
+    print("test_finalize_tfbs_run_outputs_multi_record ok")
+
+
 if __name__ == "__main__":
     test_poisson_tail()
     test_bh_fdr()
     test_family_aggregation_and_math()
     test_neighbor_capping()
     test_background_window_sampling()
-    print("all CRE unit tests passed (5/5)")
+    test_finalize_tfbs_run_outputs_multi_record()
+    print("all CRE unit tests passed (6/6)")

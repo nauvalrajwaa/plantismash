@@ -47,6 +47,7 @@ from antismash.generic_modules.recruitment_miner import (
     check_prereqs,
     check_options,
     run_recruitment_miner_for_record,
+    finalize_recruitment_run_outputs,
 )
 
 
@@ -430,7 +431,8 @@ class TestRecruitmentMiner(unittest.TestCase):
             # run_recruitment_miner_for_record handles missing DB without crashing
             run_recruitment_miner_for_record(record, opt_enabled)
 
-            # Files still created with headers
+            # Finalize creates files with headers
+            finalize_recruitment_run_outputs([record], opt_enabled)
             self.assertTrue(
                 os.path.isfile(os.path.join(temp_empty_dir, "recruitment_miner", "essential_hits.tsv"))
             )
@@ -439,6 +441,116 @@ class TestRecruitmentMiner(unittest.TestCase):
             )
         finally:
             shutil.rmtree(temp_empty_dir, ignore_errors=True)
+
+    def test_finalize_recruitment_run_outputs_multi_record(self):
+        """Test that finalize_recruitment_run_outputs aggregates rows across multiple records into run-level TSVs."""
+        temp_dir = tempfile.mkdtemp(prefix="test_rec_finalize_")
+        try:
+            rec1 = SeqRecord(Seq("ATGC" * 100), id="chr1")
+            rec2 = SeqRecord(Seq("ATGC" * 100), id="chr2")
+            seq_records = [rec1, rec2]
+
+            h1 = EssentialHit(
+                record_id="chr1",
+                cluster_idx=1,
+                product="plants/plant",
+                gene_id="GENE_1",
+                agi_hit="AT1G01010",
+                pident=85.5,
+                qcov=92.0,
+                evalue=1e-50,
+                source="CURATED_FAMILY",
+                family="OSC",
+                dup_outside="yes",
+                copies_outside=2,
+                corrupted="no",
+                corruption_reason="clean",
+                quorum_excluded="yes",
+            )
+            h2 = EssentialHit(
+                record_id="chr2",
+                cluster_idx=1,
+                product="plants/terpene",
+                gene_id="GENE_2",
+                agi_hit="AT2G02020",
+                pident=75.0,
+                qcov=88.0,
+                evalue=1e-35,
+                source="EMB",
+                family="EMB_essential",
+                dup_outside="yes",
+                copies_outside=1,
+                corrupted="yes",
+                corruption_reason="internal stop",
+                quorum_excluded="yes",
+            )
+
+            f1 = ClusterRecruitmentFlag(
+                record_id="chr1",
+                cluster_idx=1,
+                product="plants/plant",
+                n_candidates=1,
+                n_corrupted=0,
+                gene_ids=["GENE_1"],
+                bonus_signal="1 paralogs (0 corrupted)",
+            )
+            f2 = ClusterRecruitmentFlag(
+                record_id="chr2",
+                cluster_idx=1,
+                product="plants/terpene",
+                n_candidates=1,
+                n_corrupted=1,
+                gene_ids=["GENE_2"],
+                bonus_signal="1 paralogs (1 corrupted)",
+            )
+
+            options = Namespace(
+                recruitment_miner=True,
+                outputfoldername=temp_dir,
+                full_outputfolder_path=temp_dir,
+                extrarecord={
+                    "chr1": Namespace(
+                        extradata={
+                            "RecruitmentEssentialHits": [h1],
+                            "RecruitmentClusterFlags": [f1],
+                        }
+                    ),
+                    "chr2": Namespace(
+                        extradata={
+                            "RecruitmentEssentialHits": [h2],
+                            "RecruitmentClusterFlags": [f2],
+                        }
+                    ),
+                },
+            )
+
+            finalize_recruitment_run_outputs(seq_records, options)
+
+            hits_tsv = os.path.join(temp_dir, "recruitment_miner", "essential_hits.tsv")
+            flags_tsv = os.path.join(temp_dir, "recruitment_miner", "cluster_flags.tsv")
+
+            self.assertTrue(os.path.isfile(hits_tsv))
+            self.assertTrue(os.path.isfile(flags_tsv))
+
+            with open(hits_tsv, "r", encoding="utf-8") as fh:
+                hit_lines = [line.strip().split("\t") for line in fh if line.strip()]
+            self.assertEqual(len(hit_lines), 3)  # Header + 2 records
+            self.assertEqual(hit_lines[0], ESSENTIAL_HITS_HEADER)
+            self.assertEqual(hit_lines[1][0], "chr1")
+            self.assertEqual(hit_lines[1][3], "GENE_1")
+            self.assertEqual(hit_lines[2][0], "chr2")
+            self.assertEqual(hit_lines[2][3], "GENE_2")
+
+            with open(flags_tsv, "r", encoding="utf-8") as fh:
+                flag_lines = [line.strip().split("\t") for line in fh if line.strip()]
+            self.assertEqual(len(flag_lines), 3)  # Header + 2 records
+            self.assertEqual(flag_lines[0], CLUSTER_FLAGS_HEADER)
+            self.assertEqual(flag_lines[1][0], "chr1")
+            self.assertEqual(flag_lines[1][5], "GENE_1")
+            self.assertEqual(flag_lines[2][0], "chr2")
+            self.assertEqual(flag_lines[2][5], "GENE_2")
+        finally:
+            shutil.rmtree(temp_dir, ignore_errors=True)
 
 
 if __name__ == "__main__":

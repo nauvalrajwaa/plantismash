@@ -127,14 +127,46 @@ def run_recruitment_miner_for_record(record: SeqRecord, options: Any) -> None:
         essential_hits = []
         cluster_flags = []
 
-    # Always write recruitment_miner/essential_hits.tsv and cluster_flags.tsv
-    outdir = _get_output_dir(options)
-    try:
-        write_recruitment_tsvs(essential_hits, cluster_flags, outdir)
-    except Exception as e:
-        logging.warning("recruitment_miner: TSV output writing failed: %s", e)
-
-    # Stash in options.extrarecord for HTML rendering
+    # Stash in options.extrarecord for HTML rendering and run finalization
     ns.extradata["RecruitmentEssentialHits"] = essential_hits
     ns.extradata["RecruitmentClusterFlags"] = cluster_flags
     logging.info("✅ recruitment_miner finished for record: %s", record.id)
+
+
+def finalize_recruitment_run_outputs(seq_records: List[SeqRecord], options: Any) -> None:
+    """
+    Run-level finalizer for recruitment_miner.
+    Collects EssentialHit and ClusterRecruitmentFlag objects across all records
+    and writes outdir/recruitment_miner/{essential_hits,cluster_flags}.tsv once.
+    """
+    if not _enabled(options):
+        return
+
+    try:
+        outdir = _get_output_dir(options)
+        accum_hits: List[EssentialHit] = []
+        accum_flags: List[ClusterRecruitmentFlag] = []
+        extrarecord = getattr(options, "extrarecord", {}) or {}
+
+        for rec in seq_records:
+            rec_id = getattr(rec, "id", None)
+            if not rec_id or rec_id not in extrarecord:
+                continue
+            ns = extrarecord[rec_id]
+            extradata = getattr(ns, "extradata", {}) or {}
+            rec_hits = extradata.get("RecruitmentEssentialHits", [])
+            if isinstance(rec_hits, list):
+                accum_hits.extend(rec_hits)
+            rec_flags = extradata.get("RecruitmentClusterFlags", [])
+            if isinstance(rec_flags, list):
+                accum_flags.extend(rec_flags)
+
+        write_recruitment_tsvs(accum_hits, accum_flags, outdir)
+        logging.info(
+            "recruitment_miner: finalized TSVs across %d record(s) (%d hits, %d flags)",
+            len(seq_records),
+            len(accum_hits),
+            len(accum_flags),
+        )
+    except Exception:
+        logging.exception("💥 recruitment_miner: failed to finalize run outputs")

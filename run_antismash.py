@@ -1090,6 +1090,20 @@ def main():
         options.plugins = plugins
         utils.log_status("Writing the output files")
         logging.debug("Writing output for {0} sequence records".format(len(seq_records)))
+
+        # Finalize run-level outputs for Wave-2 modules
+        if getattr(options, "tfbs_detection", False) or getattr(options, "tfbs", False):
+            try:
+                tfbs_finder.finalize_tfbs_run_outputs(seq_records, options)
+            except Exception as e:
+                logging.exception("TFBS: finalize failed: %s", e)
+
+        if getattr(options, "recruitment_miner", False):
+            try:
+                recruitment_miner.finalize_recruitment_run_outputs(seq_records, options)
+            except Exception as e:
+                logging.exception("recruitment_miner: finalize failed: %s", e)
+
         write_results(output_plugins, seq_records, options)
         zip_results(seq_records, options)
         try:

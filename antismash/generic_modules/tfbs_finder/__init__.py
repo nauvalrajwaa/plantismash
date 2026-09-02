@@ -12,7 +12,7 @@
 
 """ Transcription Factor Binding Site (TFBS) module for plantiSMASH """
 
-from typing import List
+from typing import Any, List
 from argparse import Namespace
 import os
 import sys
@@ -75,8 +75,8 @@ CONNECT_TF_META_DIR = os.path.join(DATA_DIR, "connectTF_metadata")
 
 
 def _enabled(options) -> bool:
-    # Only run when the CLI flag --tfbs-detection was set (stored in options.tfbs)
-    return bool(getattr(options, "tfbs", False))
+    # Only run when the CLI flag --tfbs was set (stored in options.tfbs_detection or options.tfbs)
+    return bool(getattr(options, "tfbs_detection", False) or getattr(options, "tfbs", False))
 
 
 def _resolve_p(options) -> float:
@@ -345,8 +345,7 @@ def run_tfbs_finder_for_record(record: SeqRecord, options) -> None:
             hits_by_record={record.id: []},
         )
 
-    # Always ensure tfbs/cre_enrichment.tsv is written (with header even if empty)
-    outdir = output._get_output_dir(options)
+    # Calculate enrichment and stash in in-memory extrarecord
     enrichment_results: List[CREEnrichmentResult] = []
     hits = results.hits_by_record.get(record.id, [])
     if hits:
@@ -355,10 +354,6 @@ def run_tfbs_finder_for_record(record: SeqRecord, options) -> None:
         except Exception as e:
             logging.exception("TFBS enrichment: calculation failed for %s: %s", record.id, e)
             enrichment_results = []
-    try:
-        write_cre_enrichment_tsv(enrichment_results, outdir)
-    except Exception as e:
-        logging.warning("TFBS enrichment: write failed: %s", e)
 
     # stash results for the output module
     options.extrarecord.setdefault(record.id, Namespace())
@@ -367,6 +362,36 @@ def run_tfbs_finder_for_record(record: SeqRecord, options) -> None:
     ns.extradata["TFBSFinderResults"] = results
     ns.extradata["CREEnrichmentResults"] = enrichment_results
     logging.info("✅ TFBS finished for record: %s", record.id)
+
+
+def finalize_tfbs_run_outputs(seq_records: List[SeqRecord], options: Any) -> None:
+    """
+    Run-level finalizer for TFBS analysis.
+    Collects CREEnrichmentResults across all records and writes tfbs/cre_enrichment.tsv once.
+    """
+    if not _enabled(options):
+        return
+
+    try:
+        outdir = output._get_output_dir(options)
+        accumulated: List[CREEnrichmentResult] = []
+        extrarecord = getattr(options, "extrarecord", {}) or {}
+
+        for rec in seq_records:
+            rec_id = getattr(rec, "id", None)
+            if not rec_id or rec_id not in extrarecord:
+                continue
+            ns = extrarecord[rec_id]
+            extradata = getattr(ns, "extradata", {}) or {}
+            res_list = extradata.get("CREEnrichmentResults", [])
+            if isinstance(res_list, list):
+                accumulated.extend(res_list)
+
+        write_cre_enrichment_tsv(accumulated, outdir)
+        logging.info("TFBS: finalized CRE enrichment TSV across %d record(s) (%d total rows)",
+                     len(seq_records), len(accumulated))
+    except Exception:
+        logging.exception("💥 TFBS: failed to finalize run outputs")
 
 
 # Output integration

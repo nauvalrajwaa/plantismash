@@ -455,7 +455,7 @@ def run_cre_enrichment(record: SeqRecord,
             top_motifs_str = ";".join(top_m_names) if top_m_names else "-"
 
             # Max confidence
-            max_conf = "none"
+            max_conf = "-"
             if fam_hits:
                 conf_order = {"strong": 3, "medium": 2, "weak": 1}
                 best_h = max(fam_hits, key=lambda h: conf_order.get(str(h.confidence).lower(), 0))
@@ -540,6 +540,7 @@ CRE_TSV_HEADER = [
 def write_cre_enrichment_tsv(results: List[CREEnrichmentResult], outdir: str) -> str:
     """
     Write CRE enrichment results to <output>/tfbs/cre_enrichment.tsv.
+    Rows are sorted deterministically by (record, cluster, q_value).
     Always writes header even when results list is empty.
     """
     t_tsv_start = time.time()
@@ -547,17 +548,26 @@ def write_cre_enrichment_tsv(results: List[CREEnrichmentResult], outdir: str) ->
     os.makedirs(tfbs_dir, exist_ok=True)
     tsv_path = os.path.join(tfbs_dir, "cre_enrichment.tsv")
 
+    def sort_key(r: CREEnrichmentResult):
+        try:
+            c_int = int(r.cluster)
+        except ValueError:
+            c_int = 999999
+        return (str(r.record), c_int, r.q_value)
+
+    sorted_results = sorted(results, key=sort_key)
+
     try:
         with open(tsv_path, "w", encoding="utf-8") as fh:
             fh.write("\t".join(CRE_TSV_HEADER) + "\n")
-            for r in results:
+            for r in sorted_results:
                 fh.write("\t".join(r.to_tsv_row()) + "\n")
-        logging.info("TFBS: written CRE enrichment TSV to %s (%d rows)", tsv_path, len(results))
+        logging.info("TFBS: written CRE enrichment TSV to %s (%d rows)", tsv_path, len(sorted_results))
     except Exception as e:
         logging.warning("TFBS: failed to write CRE enrichment TSV: %s", e)
 
     t_tsv_elapsed = time.time() - t_tsv_start
     logging.warning("⏱ TFBS stage 'tsv_writes' took %.2fs (%s, %d rows)",
-                    t_tsv_elapsed, os.path.basename(tsv_path), len(results))
+                    t_tsv_elapsed, os.path.basename(tsv_path), len(sorted_results))
 
     return tsv_path

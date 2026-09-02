@@ -624,6 +624,7 @@ def run_tfbs_finder(record: SeqRecord,
     total_int = 0
     t_scan_start = time.time()
 
+    cluster_hit_counts: List[Tuple[int, int]] = []
     for c in clusters:
         cidx = utils.get_cluster_number(c)
         cstart = int(c.location.start)
@@ -654,7 +655,27 @@ def run_tfbs_finder(record: SeqRecord,
             cpus=cpus,
             desc=f"cluster #{cidx}",
         )
+        cluster_hit_counts.append((cidx, len(cluster_hits)))
         all_raw_hits.extend(cluster_hits)
+
+    # Diagnostic check for repetitive-promoter hit inflation
+    if cluster_hit_counts:
+        counts_only = sorted(cnt for _, cnt in cluster_hit_counts)
+        n_c = len(counts_only)
+        if n_c % 2 == 1:
+            median_hits = float(counts_only[n_c // 2])
+        else:
+            median_hits = (counts_only[n_c // 2 - 1] + counts_only[n_c // 2]) / 2.0
+        if median_hits > 50:
+            for cidx, c_cnt in cluster_hit_counts:
+                if c_cnt > 8.0 * median_hits:
+                    logging.warning(
+                        "TFBS: cluster #%d hit count %d is %.1fx the record median (%d) — possible repetitive-promoter inflation",
+                        cidx,
+                        c_cnt,
+                        c_cnt / median_hits,
+                        int(round(median_hits)),
+                    )
 
     t_scan_elapsed = time.time() - t_scan_start
     logging.warning("⏱ TFBS stage 'cluster_scan' took %.2fs (%d intervals, %d bp, %d raw hits)",
