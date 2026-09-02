@@ -33,6 +33,7 @@ import bisect
 import os
 import json
 import logging
+import multiprocessing
 import tempfile
 import time
 
@@ -467,6 +468,97 @@ def _scan_segment_with_pwms(record: SeqRecord,
     return hits
 
 
+def _scan_interval_worker(args: Tuple[SeqRecord, int, int, List[Matrix], float]) -> List[Tuple[int, int, int, float]]:
+    """Worker task scanning one interval with MOODS; returns raw hits."""
+    record, a, b, matrices, pvalue = args
+    return _scan_segment_with_pwms(record, a, b, matrices, pvalue)
+
+
+def scan_intervals_parallel(record: SeqRecord,
+                            intervals: List[Tuple[int, int]],
+                            matrices: List[Matrix],
+                            pvalue: float,
+                            cpus: int = 1,
+                            desc: str = "") -> List[Tuple[int, int, int, float]]:
+    """
+    Scan a list of (start, end) intervals across PWMs in parallel or sequential mode.
+
+    Returns raw hits in deterministic order:
+      List[(matrix_idx, absolute_start, strand(+1/-1), score)]
+      sorted by interval start ascending, then motif index / match order.
+
+    Determinism:
+      - Sequential path preserves exact interval evaluation order.
+      - Parallel path maps intervals with imap/starmap preserving input interval order,
+        then merges per-interval hit lists.
+      - Output intervals are sorted prior to scanning, ensuring identical ordering
+        regardless of parallel or sequential execution.
+
+    Fork safety:
+      - `matrices` must be loaded in the PARENT process before Pool creation.
+      - Uses `multiprocessing.get_context('fork')` when available (Linux / POSIX copy-on-write).
+      - If Pool creation/mapping fails (e.g. non-fork platform or environment restriction),
+        gracefully logs a warning and falls back to sequential execution.
+    """
+    if not intervals or not _HAS_MOODS or not matrices:
+        return []
+
+    # Sort intervals for deterministic processing
+    sorted_intervals = sorted(intervals, key=lambda x: (x[0], x[1]))
+    n_intervals = len(sorted_intervals)
+
+    # Use sequential loop if cpus <= 1, small number of intervals, or MOODS unavailable
+    if cpus <= 1 or n_intervals <= 3:
+        all_hits: List[Tuple[int, int, int, float]] = []
+        prog_interval = max(1, n_intervals // 10)
+        prog_interval = min(prog_interval, 20)
+        scanned_bp = 0
+        t_seq_start = time.time()
+        for j, (a, b) in enumerate(sorted_intervals, 1):
+            seg_hits = _scan_segment_with_pwms(record, a, b, matrices, pvalue)
+            all_hits.extend(seg_hits)
+            scanned_bp += (b - a + 1)
+            if j % prog_interval == 0 or j == n_intervals:
+                elapsed = time.time() - t_seq_start
+                prefix = f"TFBS: {desc} " if desc else "TFBS: "
+                logging.warning("%sscanned %d/%d intervals (%.1f%%), bp=%d, hits=%d, elapsed=%.1fs",
+                                prefix, j, n_intervals, 100.0 * j / n_intervals,
+                                scanned_bp, len(all_hits), elapsed)
+        return all_hits
+
+    # Parallel path
+    t_start = time.time()
+    n_workers = min(int(cpus), n_intervals)
+    chunksize = max(1, n_intervals // (n_workers * 8))
+
+    tasks = [(record, a, b, matrices, pvalue) for a, b in sorted_intervals]
+
+    try:
+        # Fork-safety: matrices are loaded in the PARENT before Pool creation (inherited copy-on-write)
+        ctx = multiprocessing.get_context("fork")
+        with ctx.Pool(processes=n_workers) as pool:
+            results = list(pool.imap(_scan_interval_worker, tasks, chunksize=chunksize))
+
+        all_hits = []
+        for seg_hits in results:
+            all_hits.extend(seg_hits)
+
+        elapsed = time.time() - t_start
+        desc_str = f" ({desc})" if desc else ""
+        logging.warning("parallel scan%s: %d intervals on %d workers, %d hits, %.1fs",
+                        desc_str, n_intervals, n_workers, len(all_hits), elapsed)
+        return all_hits
+
+    except Exception as e:
+        logging.warning("TFBS: parallel pool failed%s (%s); falling back to sequential scan",
+                        f" for {desc}" if desc else "", e)
+        all_hits = []
+        for a, b in sorted_intervals:
+            seg_hits = _scan_segment_with_pwms(record, a, b, matrices, pvalue)
+            all_hits.extend(seg_hits)
+        return all_hits
+
+
 def _filter_hits_to_objects(matrices: List[Matrix],
                             raw_hits: List[Tuple[int, int, int, float]]) -> List[TFBSHit]:
     out: List[TFBSHit] = []
@@ -497,7 +589,8 @@ def _filter_hits_to_objects(matrices: List[Matrix],
 def run_tfbs_finder(record: SeqRecord,
                     pvalue: float,
                     start_overlap: int,
-                    matrix_path: str = PWM_PATH) -> TFBSFinderResults:
+                    matrix_path: str = PWM_PATH,
+                    cpus: int = 1) -> TFBSFinderResults:
     """
     Run TFBS scan **per BGC** on this record:
       - for each cluster on the record, build ±start_overlap windows around CDS TSS,
@@ -553,15 +646,15 @@ def run_tfbs_finder(record: SeqRecord,
         max_intervals = int(os.environ.get("TFBS_MAX_INTERVALS", "0") or "0")
         intervals = merged[:max_intervals] if max_intervals > 0 else merged
 
-        scanned_bp = 0
-        for j, (a, b) in enumerate(intervals, 1):
-            seg_hits = _scan_segment_with_pwms(record, a, b, matrices, pvalue)
-            all_raw_hits.extend(seg_hits)
-            scanned_bp += (b - a + 1)
-            if j % 20 == 0 or j == len(intervals):
-                logging.warning("TFBS: cluster #%d scanned %d/%d intervals (%.1f%%), bp=%d, hits=%d",
-                                cidx, j, len(intervals), 100.0 * j / len(intervals),
-                                scanned_bp, len(all_raw_hits))
+        cluster_hits = scan_intervals_parallel(
+            record=record,
+            intervals=intervals,
+            matrices=matrices,
+            pvalue=pvalue,
+            cpus=cpus,
+            desc=f"cluster #{cidx}",
+        )
+        all_raw_hits.extend(cluster_hits)
 
     t_scan_elapsed = time.time() - t_scan_start
     logging.warning("⏱ TFBS stage 'cluster_scan' took %.2fs (%d intervals, %d bp, %d raw hits)",

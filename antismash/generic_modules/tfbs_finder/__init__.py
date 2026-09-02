@@ -332,7 +332,8 @@ def run_tfbs_finder_for_record(record: SeqRecord, options) -> None:
                      % (getattr(options, "record_idx", 0), p, r))
 
     try:
-        results: TFBSFinderResults = run_tfbs_finder(record, p, r)
+        cpus = getattr(options, "cpus", 1)
+        results: TFBSFinderResults = run_tfbs_finder(record, p, r, cpus=cpus)
         nhits = len(getattr(results, "hits_by_record", {}).get(record.id, []))
         logging.info("TFBS: %s finished with %d hit record(s)", record.id, nhits)
     except Exception:

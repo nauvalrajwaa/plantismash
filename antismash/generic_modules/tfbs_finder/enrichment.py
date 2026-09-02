@@ -23,7 +23,7 @@ from .tfbs_detection import (
     TFBSHit,
     _merge_intervals,
     _load_matrices_cached,
-    _scan_segment_with_pwms,
+    scan_intervals_parallel,
     build_upstream_caps,
     get_cds_capped_promoter_window,
 )
@@ -273,26 +273,26 @@ def compute_record_background_rates(record: SeqRecord,
     t_bg_start = time.time()
     motif_hits: Dict[str, int] = {m.name: 0 for m in matrices}
     
-    prog_interval = max(1, n_sampled // 10)  # ~10% intervals or at least 1
-    prog_interval = min(prog_interval, 20)    # or every 20 intervals
-
-    curr_scanned_bp = 0
+    cpus = getattr(options, "cpus", 1) if options is not None else 1
     total_raw_bg_hits = 0
 
-    for idx, (a, b) in enumerate(sampled_windows, 1):
-        seg_hits = _scan_segment_with_pwms(record, a, b, matrices, pvalue)
-        total_raw_bg_hits += len(seg_hits)
-        curr_scanned_bp += (b - a + 1)
-        for mat_idx, _, _, _ in seg_hits:
-            mname = matrices[mat_idx].name
-            motif_hits[mname] = motif_hits.get(mname, 0) + 1
+    if cpus > 1 and n_sampled > 3:
+        logging.warning("TFBS: starting parallel background scan (%d intervals, %d workers, ~%.2f Mb)",
+                        n_sampled, min(int(cpus), n_sampled), scanned_bp / 1e6)
+    all_bg_hits = scan_intervals_parallel(
+        record=record,
+        intervals=sampled_windows,
+        matrices=matrices,
+        pvalue=pvalue,
+        cpus=cpus,
+        desc="background",
+    )
+    total_raw_bg_hits = len(all_bg_hits)
+    for mat_idx, _, _, _ in all_bg_hits:
+        mname = matrices[mat_idx].name
+        motif_hits[mname] = motif_hits.get(mname, 0) + 1
 
-        if idx % prog_interval == 0 or idx == n_sampled:
-            elapsed = time.time() - t_bg_start
-            logging.warning(
-                "TFBS: background scanned %d/%d intervals (%.1f%%), bp=%d, hits=%d, elapsed=%.1fs",
-                idx, n_sampled, 100.0 * idx / n_sampled, curr_scanned_bp, total_raw_bg_hits, elapsed
-            )
+    t_bg_elapsed = time.time() - t_bg_start
 
     t_bg_elapsed = time.time() - t_bg_start
     logging.warning("⏱ TFBS stage 'background' took %.2fs (%d intervals, %d bp, %d raw hits)",
